@@ -17,8 +17,8 @@ var Asteroids = {
 		asteroids_count: 7
 	},
 	Resources: {
-		blip: new Audio('media/blip.wav'),
-		tone: new Audio('media/tone.wav')
+		blip: new Audio('games/asteroids/blip.wav'),
+		tone: new Audio('games/asteroids/tone.wav')
 	},
 	Entities: {}
 };

@@ -12,10 +12,7 @@ var Minesweeper = {
 		time: 0,
 		state: "pause"
 	},
-	Resources: {
-		blip: new Audio('media/blip.wav'),
-		tone: new Audio('media/tone.wav')
-	},
+	Resources: {},
 	Entities: {}
 };
 
@@ -137,6 +134,13 @@ let handleDouble = function(e, x, y) {
 							/* Gameover */
 							Minesweeper.State.state = "over";
 							document.getElementById("minesweeper-face").innerHTML = "😵";
+
+							for(let i = 0; i < size.total; i++) {
+								if(Minesweeper.State.map[i].value == -1 && !Minesweeper.State.map[i].visible) {
+									Minesweeper.State.map[i].visible = true;
+									renderCell(Minesweeper.State.map[i], document.querySelector(".r{0}.c{1}".format(~~(i/size.width), i%size.width)));
+								}
+							}
 						}
 
 						neighbourcell.visible = true;
@@ -201,6 +205,13 @@ let handleButton = function(e, x, y) {
 			/* Gameover */
 			Minesweeper.State.state = "over";
 			document.getElementById("minesweeper-face").innerHTML = "😵";
+
+			for(let i = 0; i < size.total; i++) {
+				if(Minesweeper.State.map[i].value == -1 && !Minesweeper.State.map[i].visible) {
+					Minesweeper.State.map[i].visible = true;
+					renderCell(Minesweeper.State.map[i], document.querySelector(".r{0}.c{1}".format(~~(i/size.width), i%size.width)));
+				}
+			}
 		}
 		if(cell.value == 0) {
 			/* Expand */

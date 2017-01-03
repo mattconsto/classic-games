@@ -61,7 +61,7 @@ html, body {
 
 @font-face {
 	font-family: 'Silkscreen';
-	src: url('media/slkscr.ttf');
+	src: url('games/pong/slkscr.ttf');
 }
 
 /* 2048 */

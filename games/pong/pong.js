@@ -12,8 +12,8 @@ let paddle2 = {x: 0.9, y: 0.4, l: 0.2};
 let ball    = {x: 0.5, y: 0.5, v:1, a:(Math.random() > 0.5 ? (Math.random()*Math.PI/2-Math.PI/8) : (Math.random()*Math.PI/2+Math.PI/8*5))};
 let ai      = false;
 
-let blip = new Audio('media/blip.wav');
-let tone = new Audio('media/tone.wav');
+let blip = new Audio('games/pong/blip.wav');
+let tone = new Audio('games/pong/tone.wav');
 
 /* Initialization */
 function init() {

@@ -9,10 +9,7 @@ var TwoZeroFourEight = {
 	State: {
 		map: new Array(size.total).fill(0)
 	},
-	Resources: {
-		blip: new Audio('media/blip.wav'),
-		tone: new Audio('media/tone.wav')
-	},
+	Resources: {},
 	Entities: {}
 };
 
