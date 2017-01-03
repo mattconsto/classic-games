@@ -6,21 +6,6 @@ let keyset  = new Set();
 let time    = window.performance.now();
 let delta   = 1000/60;
 
-Math.limit = function(val, min, max) {
-	return val < min ? min : (val > max ? max : val);
-}
-
-Math.randomRange = function(a, b) {
-	if(typeof a === "undefined") {
-		min = 0; max = Number.MAX_SAFE_INTEGER;
-	} else if(typeof b === "undefined") {
-		min = 0; max = a
-	} else {
-		min = a; max = b;
-	}
-	return Math.random() * (max - min) + min;
-}
-
 var Asteroids = {
 	State: {
 		score: 0,

@@ -64,11 +64,11 @@ document.onkeydown = function(e) {keyset.add(e.keyCode);}
 document.onkeyup   = function(e) {keyset.delete(e.keyCode)}
 
 function events() {
-	if(keyset.has(87) && !keyset.has(83)) paddle1.y = Math.lim(paddle1.y - delta*0.02, 0, 1-paddle1.l); // KeyW
-	if(keyset.has(83) && !keyset.has(87)) paddle1.y = Math.lim(paddle1.y + delta*0.02, 0, 1-paddle1.l); // KeyS
+	if(keyset.has(87) && !keyset.has(83)) paddle1.y = Math.limit(paddle1.y - delta*0.02, 0, 1-paddle1.l); // KeyW
+	if(keyset.has(83) && !keyset.has(87)) paddle1.y = Math.limit(paddle1.y + delta*0.02, 0, 1-paddle1.l); // KeyS
 
-	if(!ai && keyset.has(38) && !keyset.has(40)) paddle2.y = Math.lim(paddle2.y - delta*0.02, 0, 1-paddle2.l); // ArrowUp
-	if(!ai && keyset.has(40) && !keyset.has(38)) paddle2.y = Math.lim(paddle2.y + delta*0.02, 0, 1-paddle2.l); // ArrowDown
+	if(!ai && keyset.has(38) && !keyset.has(40)) paddle2.y = Math.limit(paddle2.y - delta*0.02, 0, 1-paddle2.l); // ArrowUp
+	if(!ai && keyset.has(40) && !keyset.has(38)) paddle2.y = Math.limit(paddle2.y + delta*0.02, 0, 1-paddle2.l); // ArrowDown
 }
 
 /* Game update logic */
@@ -77,8 +77,8 @@ function logic() {
 	ball.x += Math.cos(ball.a)*ball.v*delta*0.005;
 	ball.y += Math.sin(ball.a)*ball.v*delta*0.005;
 
-	// paddle1.y = Math.lim(ball.y - paddle1.l/2, scale, size.height-scale-paddle1.l);
-	if(ai) paddle2.y = Math.lim(ball.y - paddle2.l/2, 0, 1-paddle2.l);
+	// paddle1.y = Math.limit(ball.y - paddle1.l/2, scale, size.height-scale-paddle1.l);
+	if(ai) paddle2.y = Math.limit(ball.y - paddle2.l/2, 0, 1-paddle2.l);
 
 	/* Bounce ball of wall */
 	if(ball.y <= scale/canvas.height || ball.y >= 1 - 2*scale/canvas.height) {
@@ -89,7 +89,7 @@ function logic() {
 	/* Bounce ball of paddle, taking into account where the ball hit */
 	if(Math.round(ball.x*30) == 3 && ball.y >= paddle1.y && ball.y <= paddle1.y + paddle1.l) {
 		ball.a = Math.PI - ball.a - (ball.y - paddle1.y - paddle1.l/2)/paddle1.l*Math.PI/4;
-		ball.v = Math.min(2, ball.v + 0.05); // Limit speed to prevent ball passing through paddle.
+		ball.v = Math.min(2, ball.v + 0.05); //.limitit speed to prevent ball passing through paddle.
 		blip.play();
 	}
 

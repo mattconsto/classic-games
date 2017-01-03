@@ -5,32 +5,6 @@ let keyset  = new Set();
 let time    = window.performance.now();
 let delta   = 1000/60;
 
-Math.limit = function(val, min, max) {
-	return val < min ? min : (val > max ? max : val);
-}
-
-Math.randomRange = function(a, b) {
-	if(typeof a === "undefined") {
-		min = 0; max = Number.MAX_SAFE_INTEGER;
-	} else if(typeof b === "undefined") {
-		min = 0; max = a
-	} else {
-		min = a; max = b;
-	}
-	return Math.random() * (max - min) + min;
-}
-
-Element.prototype.remove = function() {
-	this.parentElement.removeChild(this);
-}
-NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
-	for(var i = this.length - 1; i >= 0; i--) {
-		if(this[i] && this[i].parentElement) {
-			this[i].parentElement.removeChild(this[i]);
-		}
-	}
-}
-
 var TwoZeroFourEight = {
 	State: {
 		map: new Array(size.total).fill(0)
@@ -45,6 +19,19 @@ var TwoZeroFourEight = {
 /* Initialization */
 TwoZeroFourEight.init = function() {
 	context = document.getElementById("tiles-2048");
+
+	let resizefunc = function() {
+		let context = document.getElementById("canvas-2048");
+		if(window.innerWidth*size.height/size.width < (window.innerHeight-104)) {
+			context.style.width  = window.innerWidth + "px";
+			context.style.height = window.innerWidth*size.height/size.width + "px";
+		} else {
+			context.style.width  = (window.innerHeight-104)*size.width/size.height + "px";
+			context.style.height = (window.innerHeight-104) + "px";
+		}
+	};
+	window.addEventListener("resize", resizefunc);
+	resizefunc();
 
 	let playButton = document.getElementById('play-button');
 	playButton.onclick = function() {

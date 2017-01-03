@@ -9,22 +9,18 @@
 
 	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
-	<script src="script/string-format.js"></script>
-	<script src="script/lim.js"></script>
-	<script src="script/asteroids.js"></script>
-	<script>
-		$(document).ready(function(){$('.modal').modal();});
-	</script>
+	<script src="common.js"></script>
+	<script src="games/asteroids/asteroids.js"></script>
 </head>
 <body>
 
 	<nav>
 		<div class="nav-wrapper">
-			<ul>
-				<li><a href="../" title="Return to GitHub"><i class="material-icons">arrow_back</i><i class="material-icons fa fa-github"></i></a></li>
+			<ul class="left">
+				<li><a href="index.html" title="Return to Game List"><i class="material-icons">arrow_back</i><i class="material-icons">home</i></a></li>
 			</ul>
-			<h1>Asteroids</h1>
-			<ul>
+			<a class="brand-logo center">Asteroids</a>
+			<ul class="right">
 				<li><a id="play-button" title="Pause"><i class="material-icons">pause</i></a></li>
 				<li><a href="#help" id="help-button" title="Help"><i class="material-icons">help</i></a></li>
 			</ul>

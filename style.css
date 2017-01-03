@@ -22,21 +22,6 @@ nav {
 	opacity: 0.8;
 }
 
-nav .nav-wrapper {
-	display: flex;
-}
-
-nav .nav-wrapper h1 {
-	flex-grow: 1;
-	text-align: center;
-	height: 56px;
-	line-height: 56px;
-	font-size: 2em;
-	margin: 0;
-	padding: 0;
-	white-space: nowrap;
-}
-
 @media only screen and (min-width: 601px) {
 	nav .nav-wrapper h1 {
 		height: 64px;
@@ -53,7 +38,8 @@ a[disabled]:not([disabled="false"]) {
 
 /* Canvas formatting */
 body {
-	background: #000000;
+	background: #111111;
+	overflow: hidden;
 }
 
 html, body {
@@ -82,15 +68,13 @@ html, body {
 #canvas-2048 {
 	margin: 0 auto;
 	margin-top: 20px;
+	margin-bottom: 20px;
 	display: block;
 	image-rendering: pixelated;
-	width: 300px;
-	height: 300px;
 	background: #bbada0;
 	border-radius: 3px;
 	font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
 	font-weight: bold;
-	font-size: 30px;
 	box-shadow: 0px 0px 2px rgba(150, 150, 150, 0.2);
 	padding: 5px;
 }
@@ -110,7 +94,7 @@ html, body {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	font-size: 20px;
+	font-size: 10vmin;
 	transition: all 0.2s;
 	top: 0;
 	left: 0;
@@ -145,15 +129,137 @@ html, body {
 
 #canvas-2048 .tile.top {z-index: 2;}
 
-#canvas-2048 .tile[title]:before        {color: #f9f6f2; background: #3c3a32; font-size: 20px;}
-#canvas-2048 .tile[title="2"]:before    {color: #645A51; background: #eee4da; font-size: 30px;}
-#canvas-2048 .tile[title="4"]:before    {color: #645A51; background: #ede0c8; font-size: 30px;}
-#canvas-2048 .tile[title="8"]:before    {color: #f9f6f2; background: #f2b179; font-size: 30px;}
-#canvas-2048 .tile[title="16"]:before   {color: #f9f6f2; background: #f59563; font-size: 30px;}
-#canvas-2048 .tile[title="32"]:before   {color: #f9f6f2; background: #f67c5f; font-size: 30px;}
-#canvas-2048 .tile[title="64"]:before   {color: #f9f6f2; background: #f65e3b; font-size: 30px;}
-#canvas-2048 .tile[title="128"]:before  {color: #f9f6f2; background: #edcf72; font-size: 25px;}
-#canvas-2048 .tile[title="256"]:before  {color: #f9f6f2; background: #edcc61; font-size: 25px;}
-#canvas-2048 .tile[title="512"]:before  {color: #f9f6f2; background: #edc850; font-size: 25px;}
-#canvas-2048 .tile[title="1024"]:before {color: #f9f6f2; background: #edc53f; font-size: 20px;}
-#canvas-2048 .tile[title="2048"]:before {color: #f9f6f2; background: #edc22e; font-size: 20px;}
+#canvas-2048 .tile[title]:before        {color: #f9f6f2; background: #3c3a32; font-size: 6vmin;}
+#canvas-2048 .tile[title="2"]:before    {color: #645A51; background: #eee4da; font-size: 10vmin;}
+#canvas-2048 .tile[title="4"]:before    {color: #645A51; background: #ede0c8; font-size: 10vmin;}
+#canvas-2048 .tile[title="8"]:before    {color: #f9f6f2; background: #f2b179; font-size: 10vmin;}
+#canvas-2048 .tile[title="16"]:before   {color: #f9f6f2; background: #f59563; font-size: 10vmin;}
+#canvas-2048 .tile[title="32"]:before   {color: #f9f6f2; background: #f67c5f; font-size: 10vmin;}
+#canvas-2048 .tile[title="64"]:before   {color: #f9f6f2; background: #f65e3b; font-size: 10vmin;}
+#canvas-2048 .tile[title="128"]:before  {color: #f9f6f2; background: #edcf72; font-size: 8vmin;}
+#canvas-2048 .tile[title="256"]:before  {color: #f9f6f2; background: #edcc61; font-size: 8vmin;}
+#canvas-2048 .tile[title="512"]:before  {color: #f9f6f2; background: #edc850; font-size: 8vmin;}
+#canvas-2048 .tile[title="1024"]:before {color: #f9f6f2; background: #edc53f; font-size: 6vmin;}
+#canvas-2048 .tile[title="2048"]:before {color: #f9f6f2; background: #edc22e; font-size: 6vmin;}
+
+#canvas-minesweeper {
+	text-align: center;
+	margin: 0 auto;
+}
+
+#canvas-minesweeper > div {
+	margin: 10px;
+	width: calc(100% - 20px);
+	height: calc(100% - 20px);
+	display: flex;
+	flex-direction: column
+}
+
+#canvas-minesweeper div {
+	background: #bcbcbc;
+	padding: 8px;
+	text-align: center;
+	border: 0.6vmin solid #7e7e7e;
+	border-right-color: #ffffff;
+	border-bottom-color: #ffffff;
+}
+
+#canvas-minesweeper div div {
+	margin-bottom: 8px;
+	display: flex;
+	justify-content: space-between;
+}
+
+#canvas-minesweeper div div span {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: black;
+	color: red;
+	font-size: 6vmin;
+	padding: 0 5px;
+	border: 0.6vmin solid #7e7e7e;
+	border-right-color: #ffffff;
+	border-bottom-color: #ffffff;
+}
+
+#canvas-minesweeper div div button {
+	background: #bcbcbc;
+	font-size: 6vmin;
+	border: 0.6vmin solid #7e7e7e;
+}
+
+#canvas-minesweeper div div button:not(:active) {
+	border-left-color: #ffffff;
+	border-top-color: #ffffff;
+	border-right-color: #000000;
+	border-bottom-color: #000000;
+}
+
+#canvas-minesweeper div table {
+	flex-grow: 1;
+	table-layout: fixed;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	border-spacing: 0;
+	border-collapse: collapse;
+	border: 0.6vmin solid #7e7e7e;
+	border-right-color: #ffffff;
+	border-bottom-color: #ffffff;
+}
+
+#canvas-minesweeper div table tr {
+	flex-grow: 1;
+	flex-basis: 100%;
+	display: flex;
+	margin: 0;
+	padding: 0;
+}
+
+#canvas-minesweeper div table tr td {
+	display: inline-block;
+	flex-grow: 1;
+	flex-basis: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+#canvas-minesweeper div table tr td input[type="submit"] {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	background: #bcbcbc;
+	border: 0.6vmin solid #7e7e7e;
+	font-weight: bold;
+	font-size: 6vmin;
+	cursor: default;
+}
+
+#canvas-minesweeper div table tr td input[type="submit"][value="-"]:not(:active),
+#canvas-minesweeper div table tr td input[type="submit"][value="?"],
+#canvas-minesweeper div table tr td input[type="submit"][value="⚑"] {
+	border-left-color: #ffffff;
+	border-top-color: #ffffff;
+	border-right-color: #000000;
+	border-bottom-color: #000000;
+}
+
+#canvas-minesweeper div table tr td input[type="submit"][value="-"] {
+	color: transparent;
+	cursor: pointer;
+}
+
+#canvas-minesweeper div table tr td input[type="submit"][value="0"] {color: transparent;}
+#canvas-minesweeper div table tr td input[type="submit"][value="1"] {color: blue;}
+#canvas-minesweeper div table tr td input[type="submit"][value="2"] {color: green;}
+#canvas-minesweeper div table tr td input[type="submit"][value="3"] {color: red;}
+#canvas-minesweeper div table tr td input[type="submit"][value="4"] {color: darkblue;}
+#canvas-minesweeper div table tr td input[type="submit"][value="5"] {color: brown;}
+#canvas-minesweeper div table tr td input[type="submit"][value="6"] {color: darkcyan;}
+#canvas-minesweeper div table tr td input[type="submit"][value="7"] {color: black;}
+#canvas-minesweeper div table tr td input[type="submit"][value="8"] {color: grey;}
+
+#canvas-minesweeper div table tr td input[type="submit"][value="⚑"],
+#canvas-minesweeper div table tr td input[type="submit"][value="✸"] {font-size: 5vmin;}
