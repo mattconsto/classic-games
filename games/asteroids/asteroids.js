@@ -1,21 +1,11 @@
-let canvas  = [];
-let context = [];
-let running = true;
-let size    = {scale: 16, width: 512, height: 512, total: 512 * 512};
-let keyset  = new Set();
-let time    = window.performance.now();
-let delta   = 1000/60;
-
 var Asteroids = {
-	State: {
-		score: 0,
-		lives: 3,
-		ship: {},
-		asteroids: [],
-		bullets: [],
-		debris: [],
-		asteroids_count: 7
+	Info: {
+		name: "Asteroids",
+		path: "asteroids",
+		description: "Classic Asteroids. Use WASD to fly your spaceship, and SPACE to fire a shot. Destroy all asteroids before they destroy you!"
 	},
+	Context: {},
+	State: {},
 	Resources: {
 		blip: new Audio('games/asteroids/blip.wav'),
 		tone: new Audio('games/asteroids/tone.wav')
@@ -41,7 +31,7 @@ Asteroids.Entities.Asteroid = function(x, y, r) {
 	this.prototype = new Asteroids.Entities.Particle(); // Nasty, hacky, inheritance which sort of works.
 	this.prototype.constructor.call(this, x, y, Math.randomRange(0, 2*Math.PI),Math.randomRange(0.00001, 0.0005));
 
-	this.r = Math.randomRange(0.002, typeof r !== "undefined" ? r/size.scale : 0.01)*size.scale;
+	this.r = Math.randomRange(0.002, typeof r !== "undefined" ? r/Asteroids.State.size.scale : 0.01)*Asteroids.State.size.scale;
 
 	this.render = function(context) {
 		context.beginPath();
@@ -63,7 +53,7 @@ Asteroids.Entities.Bullet = function(source) {
 
 	this.render = function(context) {
 		context.beginPath();
-		context.moveTo(this.x*context.canvas.width-Math.cos(this.a)*size.scale, this.y*context.canvas.height-Math.sin(this.a)*size.scale);
+		context.moveTo(this.x*context.canvas.width-Math.cos(this.a)*Asteroids.State.size.scale, this.y*context.canvas.height-Math.sin(this.a)*Asteroids.State.size.scale);
 		context.lineTo(this.x*context.canvas.width, this.y*context.canvas.height);
 		context.stroke();
 	}
@@ -82,7 +72,7 @@ Asteroids.Entities.Debris = function(source) {
 
 	this.render = function(context) {
 		context.beginPath();
-		context.moveTo(this.x*context.canvas.width-Math.cos(this.a)*size.scale/2, this.y*context.canvas.height-Math.sin(this.a)*size.scale/2);
+		context.moveTo(this.x*context.canvas.width-Math.cos(this.a)*Asteroids.State.size.scale/2, this.y*context.canvas.height-Math.sin(this.a)*Asteroids.State.size.scale/2);
 		context.lineTo(this.x*context.canvas.width, this.y*context.canvas.height);
 		context.stroke();
 	}
@@ -106,15 +96,15 @@ Asteroids.Entities.Ship = function(x, y) {
 	}
 
 	this.render = function(context) {
-		if(this.invicible <= 0 || (time % 200) > 100) {
+		if(this.invicible <= 0 || (Timing.stamp % 200) > 100) {
 			context.translate(this.x*context.canvas.width, this.y*context.canvas.height);
 			context.rotate(this.a+Math.PI/2);
 			context.beginPath();
-			context.moveTo(0,-2*size.scale);
-			context.lineTo(1*size.scale,1*size.scale);
+			context.moveTo(0,-2*Asteroids.State.size.scale);
+			context.lineTo(1*Asteroids.State.size.scale,1*Asteroids.State.size.scale);
 			context.lineTo(0,0);
-			context.lineTo(-1*size.scale,1*size.scale);
-			context.lineTo(0,-2*size.scale);
+			context.lineTo(-1*Asteroids.State.size.scale,1*Asteroids.State.size.scale);
+			context.lineTo(0,-2*Asteroids.State.size.scale);
 			context.stroke();
 			context.setTransform(1,0,0,1,0,0);
 		}
@@ -122,48 +112,43 @@ Asteroids.Entities.Ship = function(x, y) {
 }
 
 /* Initialization */
-Asteroids.init = function() {
-	canvas  = document.getElementById('canvas');
-	context = canvas.getContext('2d');
+Asteroids.init = function(context) {
+	Asteroids.State = {
+		size: {scale: 16, width: 512, height: 512, total: 512 * 512},
+		score: 0,
+		lives: 3,
+		ship: {},
+		asteroids: [],
+		bullets: [],
+		debris: [],
+		asteroids_count: 7,
+		running: true
+	};
 
-	canvas.height = size.height;
-	canvas.width  = size.width;
+	context.innerHTML = '<canvas id="canvas">Your browser doesn\'t support HTML5 Canvas!</canvas>';
+	Asteroids.Context = document.getElementById('canvas').getContext('2d');
+
+	Asteroids.Context.canvas.height = Asteroids.State.size.height;
+	Asteroids.Context.canvas.width  = Asteroids.State.size.width;
 
 	let resizefunc = function() {
 		console.log("Resize");
 		if(window.innerWidth < window.innerHeight-64) {
-			canvas.width  = window.innerWidth;
-			canvas.height = window.innerWidth;
-			size.scale = canvas.width/50;
+			Asteroids.Context.canvas.width  = window.innerWidth;
+			Asteroids.Context.canvas.height = window.innerWidth;
+			Asteroids.State.size.scale = Asteroids.Context.canvas.width/50;
 		} else {
-			canvas.width  = (window.innerHeight-64)*size.height/size.width;
-			canvas.height = (window.innerHeight-64);
-			size.scale = canvas.width/50;
+			Asteroids.Context.canvas.width  = (window.innerHeight-64)*Asteroids.State.size.height/Asteroids.State.size.width;
+			Asteroids.Context.canvas.height = (window.innerHeight-64);
+			Asteroids.State.size.scale = Asteroids.Context.canvas.width/50;
 		}
 	};
 	window.addEventListener("resize", resizefunc);
 	resizefunc();
 
-	let playButton = document.getElementById('play-button');
-	playButton.onclick = function() {
-		running = !running;
-		console.log(running ? "Running" : "Paused");
-		playButton.childNodes[0].innerHTML = running ? "pause" : "play_arrow";
-		playButton.childNodes[0].title     = running ? "Pause" : "Play";
-	}
-
-	document.addEventListener("visibilitychange", function() {
-		if(document.hidden) {
-			running = false;
-			console.log("Paused");
-			playButton.childNodes[0].innerHTML = "pause";
-			playButton.childNodes[0].title     = "Pause";
-		}
-	});
-
 	/* Input events */
-	document.onkeydown = function(e) {keyset.add(e.keyCode);}
-	document.onkeyup   = function(e) {keyset.delete(e.keyCode)}
+	document.onkeydown = function(e) {Keyboard.add(e.keyCode);}
+	document.onkeyup   = function(e) {Keyboard.delete(e.keyCode)}
 
 	/* Generate asteroids */
 	for(let i = 0; i < Asteroids.State.asteroids_count; i++) Asteroids.State.asteroids.push(new Asteroids.Entities.Asteroid(Math.random(), Math.random()));
@@ -173,14 +158,14 @@ Asteroids.init = function() {
 	Asteroids.loop();
 }
 
-Asteroids.events = function(state, res) {
-	if(keyset.has(87) && !keyset.has(83)) {state.ship.v = Math.max(-state.ship.max/2, Math.min(state.ship.max, state.ship.v + delta*0.000005));} // KeyW
-	if(keyset.has(83) && !keyset.has(87)) {state.ship.v = Math.max(-state.ship.max/2, Math.min(state.ship.max, state.ship.v - delta*0.000005));} // KeyS
+Asteroids.events = function(state, context, res) {
+	if(Keyboard.has(87) && !Keyboard.has(83)) {state.ship.v = Math.max(-state.ship.max/2, Math.min(state.ship.max, state.ship.v + Timing.delta*0.000005));} // KeyW
+	if(Keyboard.has(83) && !Keyboard.has(87)) {state.ship.v = Math.max(-state.ship.max/2, Math.min(state.ship.max, state.ship.v - Timing.delta*0.000005));} // KeyS
 
-	if(keyset.has(65) && !keyset.has(68)) {state.ship.a -= delta*0.01;} // KeyA
-	if(keyset.has(68) && !keyset.has(65)) {state.ship.a += delta*0.01;} // KeyD
+	if(Keyboard.has(65) && !Keyboard.has(68)) {state.ship.a -= Timing.delta*0.01;} // KeyA
+	if(Keyboard.has(68) && !Keyboard.has(65)) {state.ship.a += Timing.delta*0.01;} // KeyD
 
-	if(running && keyset.has(32) && state.ship.lastbullet >= 400) {
+	if(Keyboard.has(32) && state.ship.lastbullet >= 400) {
 		console.log("Fire");
 		state.ship.lastbullet = 0;
 		res.blip.play();
@@ -189,11 +174,11 @@ Asteroids.events = function(state, res) {
 }
 
 /* Game update logic */
-Asteroids.logic = function(state, res) {
+Asteroids.logic = function(state, context, res) {
 	// Update state
 	[state.asteroids, state.bullets, state.debris, [state.ship]].forEach(function(object) {
 		for(let i = object.length-1; i >= 0; i--) {
-			object[i].logic(delta, size);
+			object[i].logic(Timing.delta, Asteroids.State.size);
 			if(!object[i].alive) object.splice(i, 1);
 		}
 	});
@@ -202,7 +187,7 @@ Asteroids.logic = function(state, res) {
 	for(let a = state.asteroids.length-1; a >= 0; a--) {
 		for(let b = state.bullets.length-1; b >= 0; b--) {
 			if(Math.pow(state.asteroids[a].x - state.bullets[b].x, 2) + Math.pow(state.asteroids[a].y - state.bullets[b].y, 2) < Math.pow(state.asteroids[a].r, 2)) {
-				if(state.asteroids[a].r/size.scale > 0.005)
+				if(state.asteroids[a].r/Asteroids.State.size.scale > 0.005)
 					for(let i = 0; i < Math.round(Math.randomRange(0, 3)); i++)
 						Asteroids.State.asteroids.push(new Asteroids.Entities.Asteroid(state.asteroids[a].x, state.asteroids[a].y, state.asteroids[a].r/2));
 
@@ -215,7 +200,7 @@ Asteroids.logic = function(state, res) {
 				setTimeout(function(){
 					res.tone.currentTime = 0;
 					res.tone.pause();
-					running = true;
+					Asteroids.State.running = true;
 				}, 200);
 				return;
 			}
@@ -236,14 +221,14 @@ Asteroids.logic = function(state, res) {
 				for(let i = 0; i < state.asteroids_count; i++) Asteroids.State.asteroids.push(new Asteroids.Entities.Asteroid(Math.random(), Math.random()));
 			}
 
-			running = false;
+			Asteroids.State.running = false;
 			state.ship = new Asteroids.Entities.Ship(0.5, 0.5);
 
 			res.tone.play();
 			setTimeout(function(){
 				res.tone.currentTime = 0;
 				res.tone.pause();
-				running = true;
+				Asteroids.State.running = true;
 			}, 1000);
 
 			return;
@@ -258,7 +243,7 @@ Asteroids.logic = function(state, res) {
 }
 
 /* Renderer */
-Asteroids.render = function(state) {
+Asteroids.render = function(state, context, res) {
 	context.font = "20px Silkscreen";
 	context.fillStyle = "#000000";
 	context.fillRect(0, 0, context.canvas.width, context.canvas.height);
@@ -275,16 +260,16 @@ Asteroids.render = function(state) {
 /* Gameloop */
 
 Asteroids.loop = function() {
-	let now = window.performance.now();
-	delta = now - time;
-	time = now;
+	Timing.refresh();
 
-	Asteroids.events(Asteroids.State, Asteroids.Resources);
-	if (running) Asteroids.logic(Asteroids.State, Asteroids.Resources);
-	Asteroids.render(Asteroids.State, Asteroids.Resources);
+	if(Asteroids.State.running) {
+		Asteroids.events(Asteroids.State, Asteroids.Context, Asteroids.Resources);
+		Asteroids.logic(Asteroids.State, Asteroids.Context, Asteroids.Resources);
+	}
+	Asteroids.render(Asteroids.State, Asteroids.Context, Asteroids.Resources);
 
 	requestAnimationFrame(Asteroids.loop);
 }
 
 /* Start */
-window.addEventListener("load", Asteroids.init, false);
+addEventListener("load", function(){if(typeof Loader !== "undefined") Loader.register(Asteroids);});

@@ -1,24 +1,11 @@
-let canvas  = [];
-let context = [];
-let running = true;
-let keyset  = new Set();
-let time    = window.performance.now();
-let delta   = 1000/60;
-
 var Snake = {
 	Info: {
 		name: "Snake",
-		path: "Snake",
+		path: "snake",
 		description: "Classic Snake. Use WASD to move!"
 	},
-	State: {
-		size: {scale: 1, width: 20, height: 20, total: 20 * 20},
-		pellets: [],
-		snake: [],
-		direction: 0,
-		facing: 0,
-		timer: 0
-	},
+	Context: {},
+	State: {},
 	Resources: {
 		tilesheet: []
 	},
@@ -26,12 +13,22 @@ var Snake = {
 };
 
 /* Initialization */
-Snake.init = function() {
-	canvas  = document.getElementById('canvas');
-	context = canvas.getContext('2d');
+Snake.init = function(context) {
+	Snake.State = {
+		size: {scale: 1, width: 20, height: 20, total: 20 * 20},
+		pellets: [],
+		snake: [{x:10,y:9}, {x:10,y:10}],
+		direction: 0,
+		facing: 0,
+		timer: 0,
+		running: true
+	};
 
-	canvas.height = Snake.State.size.height;
-	canvas.width  = Snake.State.size.width;
+	context.innerHTML = '<canvas id="canvas">Your browser doesn\'t support HTML5 Canvas!</canvas>';
+	Snake.Context = document.getElementById('canvas').getContext('2d');
+
+	Snake.Context.canvas.height = Snake.State.size.height;
+	Snake.Context.canvas.width  = Snake.State.size.width;
 
 	Snake.Resources.tilesheet = new Image();
 	Snake.Resources.tilesheet.src = "games/snake/sprites.png"; // http://rembound.com/articles/creating-a-snake-game-tutorial-with-html5 Just the image, code is 100% original.
@@ -39,38 +36,19 @@ Snake.init = function() {
 	let resizefunc = function() {
 		console.log("Resize");
 		if(window.innerWidth < window.innerHeight-64) {
-			canvas.width  = window.innerWidth;
-			canvas.height = window.innerWidth;
+			Snake.Context.canvas.width  = window.innerWidth;
+			Snake.Context.canvas.height = window.innerWidth;
 		} else {
-			canvas.width  = (window.innerHeight-64)*Snake.State.size.height/Snake.State.size.width;
-			canvas.height = (window.innerHeight-64);
+			Snake.Context.canvas.width  = (window.innerHeight-64)*Snake.State.size.height/Snake.State.size.width;
+			Snake.Context.canvas.height = (window.innerHeight-64);
 		}
 	};
 	window.addEventListener("resize", resizefunc);
 	resizefunc();
 
-	let playButton = document.getElementById('play-button');
-	playButton.onclick = function() {
-		running = !running;
-		console.log(running ? "Running" : "Paused");
-		playButton.childNodes[0].innerHTML = running ? "pause" : "play_arrow";
-		playButton.childNodes[0].title     = running ? "Pause" : "Play";
-	}
-
-	document.addEventListener("visibilitychange", function() {
-		if(document.hidden) {
-			running = false;
-			console.log("Paused");
-			playButton.childNodes[0].innerHTML = "pause";
-			playButton.childNodes[0].title     = "Pause";
-		}
-	});
-
 	/* Input events */
-	document.onkeydown = function(e) {keyset.add(e.keyCode);}
-	document.onkeyup   = function(e) {keyset.delete(e.keyCode)}
-
-	Snake.State.snake = [{x:10,y:9}, {x:10,y:10}];
+	document.onkeydown = function(e) {Keyboard.add(e.keyCode);}
+	document.onkeyup   = function(e) {Keyboard.delete(e.keyCode)}
 
 	let position = {x:-1, y:-1};
 	for(let t = 0; t < 100; t++) {
@@ -91,18 +69,18 @@ Snake.init = function() {
 	Snake.loop();
 }
 
-Snake.events = function(state, res) {
-	if(keyset.size == 1) {
-		if(keyset.has(87) && state.direction != 2) state.direction = 0; // KeyW
-		if(keyset.has(68) && state.direction != 3) state.direction = 1; // KeyD
-		if(keyset.has(83) && state.direction != 0) state.direction = 2; // KeyS
-		if(keyset.has(65) && state.direction != 1) state.direction = 3; // KeyA
+Snake.events = function(state, context, res) {
+	if(Keyboard.size == 1) {
+		if(Keyboard.has(87) && state.direction != 2) state.direction = 0; // KeyW
+		if(Keyboard.has(68) && state.direction != 3) state.direction = 1; // KeyD
+		if(Keyboard.has(83) && state.direction != 0) state.direction = 2; // KeyS
+		if(Keyboard.has(65) && state.direction != 1) state.direction = 3; // KeyA
 	}
 }
 
 /* Game update logic */
-Snake.logic = function(state, res) {
-	if(state.timer > 150) {
+Snake.logic = function(state, context, res) {
+	if(state.timer > 200) {
 		let segment = {x:state.snake[0].x,y:state.snake[0].y};
 		switch(state.direction % 4) {
 			case 0: segment.y--;break; // North
@@ -124,11 +102,11 @@ Snake.logic = function(state, res) {
 		}
 		if(gobbled) {
 			state.snake[0].o = Math.PI*(state.direction%4)/2;
-			running = false;
+			Snake.State.running = false;
 			setTimeout(function() {
 				state.snake = [{x:10,y:9}, {x:10,y:10}];
 				state.direction = state.facing = 0;
-				running = true;
+				Snake.State.running = true;
 			}, 1000);
 			return;
 		} else {
@@ -166,11 +144,11 @@ Snake.logic = function(state, res) {
 			state.timer = 0;
 		}
 	}
-	state.timer += delta;
+	state.timer += Timing.delta;
 }
 
 /* Renderer */
-Snake.render = function(state) {
+Snake.render = function(state, context, res) {
 	context.fillStyle = "#F7E592";
 	context.fillRect(0, 0, context.canvas.width, context.canvas.height);
 
@@ -220,16 +198,16 @@ Snake.render = function(state) {
 
 /* Gameloop */
 Snake.loop = function() {
-	let now = window.performance.now();
-	delta = now - time;
-	time = now;
+	Timing.refresh();
 
-	Snake.events(Snake.State, Snake.Resources);
-	if (running) Snake.logic(Snake.State, Snake.Resources);
-	Snake.render(Snake.State, Snake.Resources);
+	if (Snake.State.running) {
+		Snake.events(Snake.State, Snake.Context, Snake.Resources);
+		Snake.logic(Snake.State, Snake.Context, Snake.Resources);
+	}
+	Snake.render(Snake.State, Snake.Context, Snake.Resources);
 
 	requestAnimationFrame(Snake.loop);
 }
 
 /* Start */
-window.addEventListener("load", Snake.init, false);
+addEventListener("load", function(){if(typeof Loader !== "undefined") Loader.register(Snake);});

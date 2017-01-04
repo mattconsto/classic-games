@@ -6,10 +6,16 @@ let time    = window.performance.now();
 let delta   = 1000/60;
 
 var Minesweeper = {
+	Info: {
+		name: "Minesweeper",
+		path: "minesweeper",
+		description: "Classic Minesweeper!"
+	},
+	Context: {},
 	State: {
 		map: [],
 		bombs: 16,
-		time: 0,
+		time: 0,
 		state: "pause"
 	},
 	Resources: {},
@@ -117,7 +123,7 @@ let handleDouble = function(e, x, y) {
 		for(let dy = -1; dy <= 1; dy++) {
 			for(let dx = -1; dx <= 1; dx++) {
 				let neighbour = position + dx + dy*size.width;
-				if(neighbour >= 0 && neighbour < size.total && (position % size.width) + dx >= 0 && (position % size.width) + dx < size.width && Minesweeper.State.map[neighbour].flag) {
+				if(neighbour >= 0 && neighbour < size.total && (position % size.width) + dx >= 0 && (position % size.width) + dx < size.width && Minesweeper.State.map[neighbour].flag) {
 					flags++;
 				}
 			}
@@ -127,7 +133,7 @@ let handleDouble = function(e, x, y) {
 			for(let dy = -1; dy <= 1; dy++) {
 				for(let dx = -1; dx <= 1; dx++) {
 					let neighbour = position + dx + dy*size.width;
-					if(neighbour >= 0 && neighbour < size.total && (position % size.width) + dx >= 0 && (position % size.width) + dx < size.width && !Minesweeper.State.map[neighbour].flag) {
+					if(neighbour >= 0 && neighbour < size.total && (position % size.width) + dx >= 0 && (position % size.width) + dx < size.width && !Minesweeper.State.map[neighbour].flag) {
 						let neighbourcell = Minesweeper.State.map[neighbour];
 
 						if(neighbourcell.value == -1) {
@@ -166,7 +172,7 @@ let handleButton = function(e, x, y) {
 			for(let i = 0; i < Minesweeper.State.bombs; i++) {
 				let position = Math.floor(Math.randomRange(0, Minesweeper.State.map.length));
 				if(Minesweeper.State.map[position].value == -1) {
-					console.log("collision: " + position);
+					console.log("collision: " + position);
 					if(limit2-- > 0) {
 						i--; // Keep looking.
 					} else {
@@ -179,7 +185,7 @@ let handleButton = function(e, x, y) {
 						for(let dx = -1; dx <= 1; dx++) {
 							if(!(dy == 0 && dx == 0)) {
 								let neighbour = position + dx + dy*size.width;
-								if(neighbour >= 0 && neighbour < size.total && (position % size.width) + dx >= 0 && (position % size.width) + dx < size.width && Minesweeper.State.map[neighbour].value >= 0) {
+								if(neighbour >= 0 && neighbour < size.total && (position % size.width) + dx >= 0 && (position % size.width) + dx < size.width && Minesweeper.State.map[neighbour].value >= 0) {
 									Minesweeper.State.map[neighbour].value++;
 								}
 							}
@@ -297,4 +303,5 @@ Minesweeper.loop = function() {
 }
 
 /* Start */
+// addEventListener("load", function(){if(typeof Loader !== "undefined") Loader.register(Minesweeper);});
 window.addEventListener("load", Minesweeper.init, false);

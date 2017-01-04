@@ -1,3 +1,15 @@
+var Keyboard = new Set();
+
+var Timing =  {
+	stamp: window.performance.now(),
+	delta: 1000/60,
+	refresh: function() {
+		let temp = window.performance.now();
+		this.delta = temp - this.stamp;
+		return this.stamp = temp;
+	}
+}
+
 if (!String.prototype.format) {
 	String.prototype.format = function() {
 		var args = arguments;
@@ -15,7 +27,6 @@ if (!String.prototype.formatApply) {
 		});
 	};
 }
-
 
 Boolean.xor = function(a, b) {return ( a || b ) && !( a && b );}
 
