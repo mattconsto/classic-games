@@ -7,9 +7,19 @@ if (!String.prototype.format) {
 	};
 }
 
-Math.limit = function(val, min, max) {
-	return val < min ? min : (val > max ? max : val);
+if (!String.prototype.formatApply) {
+	String.prototype.formatApply = function() {
+		var args = arguments[0];
+		return this.replace(/{([\w\d]+)}/g, function(match, number) {
+			return typeof args[number] != 'undefined' && !match.startsWith("{_") ? args[number] : match;
+		});
+	};
 }
+
+
+Boolean.xor = function(a, b) {return ( a || b ) && !( a && b );}
+
+Math.limit = function(val, min, max) {return val < min ? min : (val > max ? max : val);}
 
 Math.randomRange = function(a, b) {
 	if(typeof a === "undefined") {
@@ -22,9 +32,7 @@ Math.randomRange = function(a, b) {
 	return Math.random() * (max - min) + min;
 }
 
-Element.prototype.remove = function() {
-	this.parentElement.removeChild(this);
-}
+Element.prototype.remove = function() {this.parentElement.removeChild(this);}
 
 NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
 	for(var i = this.length - 1; i >= 0; i--) {
