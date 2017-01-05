@@ -23,8 +23,7 @@ var Loader = {
 		let html = "";
 
 		for(let game in Loader.State.list) {
-			html += '\
-	<div class="col s6 m4 l3">\
+			html += '	<div class="col s6 m4 l3">\
 		<div class="card">\
 			<div class="card-image">\
 				<a href="#!/play/{path}"><img src="games/{path}/screenshot.png" alt="{name}" title="{description}" /></a>\

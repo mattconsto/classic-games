@@ -12,22 +12,30 @@ var Timing =  {
 	}
 }
 
-if (!String.prototype.format) {
-	String.prototype.format = function() {
-		var args = arguments;
-		return this.replace(/{(\d+)}/g, function(match, number) { 
-			return typeof args[number] != 'undefined' ? args[number] : match;
-		});
-	};
+String.prototype.format = function() {
+	var args = arguments;
+	return this.replace(/{(\d+)}/g, function(match, number) { 
+		return typeof args[number] != 'undefined' ? args[number] : match;
+	});
+};
+
+String.prototype.formatApply = function() {
+	var args = arguments[0];
+	return this.replace(/{([\w\d]+)}/g, function(match, number) {
+		return typeof args[number] != 'undefined' && !match.startsWith("{_") ? args[number] : match;
+	});
+};
+
+String.prototype.leftpad = function(padding, length) {
+	let output = this;
+	while(output.length < length) output = padding + output;
+	return output;
 }
 
-if (!String.prototype.formatApply) {
-	String.prototype.formatApply = function() {
-		var args = arguments[0];
-		return this.replace(/{([\w\d]+)}/g, function(match, number) {
-			return typeof args[number] != 'undefined' && !match.startsWith("{_") ? args[number] : match;
-		});
-	};
+String.prototype.rightpad = function(padding, length) {
+	let output = this;
+	while(output.length < length) output = output + padding;
+	return output;
 }
 
 Boolean.xor = function(a, b) {return ( a || b ) && !( a && b );}
@@ -55,4 +63,4 @@ NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
 	}
 }
 
-$(document).ready(function(){$('.modal').modal();});
+// $(document).ready(function(){$('.modal').modal();});

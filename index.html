@@ -14,22 +14,24 @@
 	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
 
-	<script src="games/2048/2048.js"></script>
-	<script src="games/asteroids/asteroids.js"></script>
-	<script src="games/flappybird/flappybird.js"></script>
-	<script src="games/minesweeper/minesweeper.js"></script>
-	<script src="games/pong/pong.js"></script>
-	<script src="games/snake/snake.js"></script>
-
 	<script src="common.js"></script>
+
+	<script>
+		["2048", "asteroids", "flappybird", "minesweeper", "pong", "snake"].forEach(function(game) {
+			var script = document.createElement('script');
+			script.setAttribute("src", "games/{0}/{0}.js".format(game));
+			document.getElementsByTagName("head")[0].appendChild(script);
+		});
+	</script>
+
 	<script src="loader.js"></script>
 </head>
 <body>
 	<nav>
 		<div class="nav-wrapper">
 			<ul class="left">
-				<li id="back-github"><a href="../" title="Return to GitHub"><i class="material-icons">arrow_back</i><i class="material-icons fa fa-github"></i></a></li>
-				<li id="back-home"><a href="#!/list" title="Return to Game List"><i class="material-icons">arrow_back</i><i class="material-icons">home</i></a></li>
+				<li id="back-github" style="display: none;"><a href="../" title="Return to GitHub"><i class="material-icons">arrow_back</i><i class="material-icons fa fa-github"></i></a></li>
+				<li id="back-home" style="display: none;"><a href="#!/list" title="Return to Game List"><i class="material-icons">arrow_back</i><i class="material-icons">home</i></a></li>
 			</ul>
 			<a class="brand-logo center">Classic Games</a>
 			<ul class="right"></ul>

@@ -1,7 +1,7 @@
 var FlappyBird = {
 	Info: {
-		name: "FlappyBird",
-		path: "FlappyBird",
+		name: "Flappy Bird",
+		path: "flappybird",
 		description: "Classic FlappyBird!"
 	},
 	Context: {},
@@ -15,6 +15,9 @@ var FlappyBird = {
 
 /* Initialization */
 FlappyBird.init = function(context) {
+	context.innerHTML = '<canvas id="canvas">Your browser doesn\'t support HTML5 Canvas!</canvas>';
+	FlappyBird.Context = document.getElementById('canvas').getContext('2d');
+
 	FlappyBird.loop();
 }
 

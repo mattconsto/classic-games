@@ -79,12 +79,6 @@ Minesweeper.init = function(context) {
 	Minesweeper.loop();
 }
 
-let leftpad = function(text, padding, length) {
-	let output = text + "";
-	while(output.length < length) output = padding + output;
-	return output;
-}
-
 let handleFlag = function(e, x, y) {
 	if(Minesweeper.State.state == "pause" || Minesweeper.State.state == "over") return;
 
@@ -269,8 +263,8 @@ Minesweeper.logic = function(state, context, res) {
 
 /* Renderer */
 Minesweeper.render = function(state, context, res) {
-	document.getElementById('minesweeper-time').innerHTML  = leftpad(Math.floor(state.time), "0", 3);
-	document.getElementById('minesweeper-bombs').innerHTML = leftpad(state.bombs, "0", 3);
+	document.getElementById('minesweeper-time').innerHTML  = (Math.floor(state.time)+"").leftpad("0", 3);
+	document.getElementById('minesweeper-bombs').innerHTML = (state.bombs+"").leftpad("0", 3);
 }
 
 /* Gameloop */

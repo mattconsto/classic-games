@@ -8,7 +8,6 @@ var TwoZeroFourEight = {
 	State: {
 		size: {scale: 1, width: 4, height: 4, total: 4 * 4},
 		map: new Array(4 * 4).fill(0),
-		running: true,
 		timeout: 200
 	},
 	Resources: {},
@@ -219,25 +218,11 @@ TwoZeroFourEight.events = function(state, context, res) {
 	state.timeout += Timing.delta;
 }
 
-/* Game update logic */
-TwoZeroFourEight.logic = function(state, context, res) {
-
-}
-
-/* Renderer */
-TwoZeroFourEight.render = function(state, context, res) {
-
-}
-
 /* Gameloop */
 
 TwoZeroFourEight.loop = function() {
 	Timing.refresh();
 
-	if (TwoZeroFourEight.State.running) {
-		TwoZeroFourEight.events(TwoZeroFourEight.State, TwoZeroFourEight.Context, TwoZeroFourEight.Resources);
-		TwoZeroFourEight.logic(TwoZeroFourEight.State, TwoZeroFourEight.Context, TwoZeroFourEight.Resources);
-	}
 	TwoZeroFourEight.render(TwoZeroFourEight.State, TwoZeroFourEight.Context, TwoZeroFourEight.Resources);
 
 	requestAnimationFrame(TwoZeroFourEight.loop);
