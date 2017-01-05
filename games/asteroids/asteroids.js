@@ -146,10 +146,6 @@ Asteroids.init = function(context) {
 	window.addEventListener("resize", resizefunc);
 	resizefunc();
 
-	/* Input events */
-	document.onkeydown = function(e) {Keyboard.add(e.keyCode);}
-	document.onkeyup   = function(e) {Keyboard.delete(e.keyCode)}
-
 	/* Generate asteroids */
 	for(let i = 0; i < Asteroids.State.asteroids_count; i++) Asteroids.State.asteroids.push(new Asteroids.Entities.Asteroid(Math.random(), Math.random()));
 

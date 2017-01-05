@@ -1,4 +1,6 @@
 var Keyboard = new Set();
+document.addEventListener("keydown", function(e) {Keyboard.add(e.keyCode);});
+document.addEventListener("keyup",   function(e) {Keyboard.delete(e.keyCode)});
 
 var Timing =  {
 	stamp: window.performance.now(),

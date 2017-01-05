@@ -46,10 +46,6 @@ Snake.init = function(context) {
 	window.addEventListener("resize", resizefunc);
 	resizefunc();
 
-	/* Input events */
-	document.onkeydown = function(e) {Keyboard.add(e.keyCode);}
-	document.onkeyup   = function(e) {Keyboard.delete(e.keyCode)}
-
 	let position = {x:-1, y:-1};
 	for(let t = 0; t < 100; t++) {
 		position = {x:Math.floor(Math.randomRange(0, Snake.State.size.width)), y:Math.floor(Math.randomRange(0, Snake.State.size.height))};

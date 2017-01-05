@@ -1,98 +1,101 @@
-let context = [];
-let running = true;
-let size    = {scale: 1, width: 4, height: 4, total: 4 * 4};
-let keyset  = new Set();
-let time    = window.performance.now();
-let delta   = 1000/60;
-
 var TwoZeroFourEight = {
+	Info: {
+		name: "2048",
+		path: "2048",
+		description: "Classic 2048!"
+	},
+	Context: {},
 	State: {
-		map: new Array(size.total).fill(0)
+		size: {scale: 1, width: 4, height: 4, total: 4 * 4},
+		map: new Array(4 * 4).fill(0),
+		running: true,
+		timeout: 200
 	},
 	Resources: {},
 	Entities: {}
 };
 
 /* Initialization */
-TwoZeroFourEight.init = function() {
-	context = document.getElementById("tiles-2048");
+TwoZeroFourEight.init = function(context) {
+	context.innerHTML = '	<div id="canvas-2048">\
+		<div>\
+			<div id="grid-2048">\
+				<span class="tile r1 c1"></span>\
+				<span class="tile r1 c2"></span>\
+				<span class="tile r1 c3"></span>\
+				<span class="tile r1 c4"></span>\
+				<span class="tile r2 c1"></span>\
+				<span class="tile r2 c2"></span>\
+				<span class="tile r2 c3"></span>\
+				<span class="tile r2 c4"></span>\
+				<span class="tile r3 c1"></span>\
+				<span class="tile r3 c2"></span>\
+				<span class="tile r3 c3"></span>\
+				<span class="tile r3 c4"></span>\
+				<span class="tile r4 c1"></span>\
+				<span class="tile r4 c2"></span>\
+				<span class="tile r4 c3"></span>\
+				<span class="tile r4 c4"></span>\
+			</div>\
+\
+			<div id="tiles-2048"></div>\
+		</div>\
+	</div>';
+
+	TwoZeroFourEight.Context = document.getElementById("tiles-2048");
 
 	let resizefunc = function() {
-		let context = document.getElementById("canvas-2048");
-		if(window.innerWidth*size.height/size.width < (window.innerHeight-104)) {
-			context.style.width  = window.innerWidth + "px";
-			context.style.height = window.innerWidth*size.height/size.width + "px";
+		if(window.innerWidth*TwoZeroFourEight.State.size.height/TwoZeroFourEight.State.size.width < (window.innerHeight-104)) {
+			TwoZeroFourEight.Context.style.width  = window.innerWidth + "px";
+			TwoZeroFourEight.Context.style.height = window.innerWidth*TwoZeroFourEight.State.size.height/TwoZeroFourEight.State.size.width + "px";
 		} else {
-			context.style.width  = (window.innerHeight-104)*size.width/size.height + "px";
-			context.style.height = (window.innerHeight-104) + "px";
+			TwoZeroFourEight.Context.style.width  = (window.innerHeight-104)*TwoZeroFourEight.State.size.width/TwoZeroFourEight.State.size.height + "px";
+			TwoZeroFourEight.Context.style.height = (window.innerHeight-104) + "px";
 		}
 	};
 	window.addEventListener("resize", resizefunc);
 	resizefunc();
 
-	let playButton = document.getElementById('play-button');
-	playButton.onclick = function() {
-		running = !running;
-		console.log(running ? "Running" : "Paused");
-		playButton.childNodes[0].innerHTML = running ? "pause" : "play_arrow";
-		playButton.childNodes[0].title	 = running ? "Pause" : "Play";
-	}
-
-	document.addEventListener("visibilitychange", function() {
-		if(document.hidden) {
-			running = false;
-			console.log("Paused");
-			playButton.childNodes[0].innerHTML = "pause";
-			playButton.childNodes[0].title	 = "Pause";
-		}
-	});
-
-	/* Input events */
-	document.onkeydown = function(e) {keyset.add(e.keyCode);}
-	document.onkeyup   = function(e) {keyset.delete(e.keyCode)}
-
-	TwoZeroFourEight.State.map[Math.round(Math.randomRange(0, size.total))] = 2;
-	TwoZeroFourEight.State.map[Math.round(Math.randomRange(0, size.total))] = 2;
-	TwoZeroFourEight.State.map[Math.round(Math.randomRange(0, size.total))] = 2;
+	TwoZeroFourEight.State.map[Math.round(Math.randomRange(0, TwoZeroFourEight.State.size.total))] = 2;
+	TwoZeroFourEight.State.map[Math.round(Math.randomRange(0, TwoZeroFourEight.State.size.total))] = 2;
+	TwoZeroFourEight.State.map[Math.round(Math.randomRange(0, TwoZeroFourEight.State.size.total))] = 2;
 	
-	context.innerHTML = "";
-	for(let i = 0; i < size.total; i++) {
-		if(TwoZeroFourEight.State.map[i] != 0) context.innerHTML += '<span class="tile r{0} c{1}" title="{2}" />'.format(~~(i/size.height), i%size.width, TwoZeroFourEight.State.map[i]);
+	TwoZeroFourEight.Context.innerHTML = "";
+	for(let i = 0; i < TwoZeroFourEight.State.size.total; i++) {
+		if(TwoZeroFourEight.State.map[i] != 0) TwoZeroFourEight.Context.innerHTML += '<span class="tile r{0} c{1}" title="{2}" />'.format(~~(i/TwoZeroFourEight.State.size.height), i%TwoZeroFourEight.State.size.width, TwoZeroFourEight.State.map[i]);
 	}
 
 	TwoZeroFourEight.loop();
 }
 
-let timeout = 200;
-
-TwoZeroFourEight.events = function(state, res) {
-	if(timeout >= 200 && keyset.size == 1) {
+TwoZeroFourEight.events = function(state, context, res) {
+	if(state.timeout >= 200 && Keyboard.size == 1) {
 		let moved = false;
 
-		switch(keyset.values().next().value) {
+		switch(Keyboard.values().next().value) {
 			case 87: { // KeyW
-				for(let y = 1; y < size.height; y++) {
-					for(let x = 0; x < size.width; x++) {
-						if(state.map[y*size.width+x] != 0) {
+				for(let y = 1; y < state.size.height; y++) {
+					for(let x = 0; x < state.size.width; x++) {
+						if(state.map[y*state.size.width+x] != 0) {
 							let j = x, k = y;
 							for(; k > 0; k--) {
-								if(state.map[(k-1)*size.width+j] == 0) {
+								if(state.map[(k-1)*state.size.width+j] == 0) {
 									// If blank we can continue to move.
 									continue;
-								} else if(state.map[(k-1)*size.width+j] == state.map[y*size.width+x]) {
+								} else if(state.map[(k-1)*state.size.width+j] == state.map[y*state.size.width+x]) {
 									// Values are the same, so we continue to push.
-									state.map[y*size.width+x] += state.map[(k-1)*size.width+j];
-									state.map[(k-1)*size.width+j] = 0;
+									state.map[y*state.size.width+x] += state.map[(k-1)*state.size.width+j];
+									state.map[(k-1)*state.size.width+j] = 0;
 
-									context.querySelector(".tile.r{0}.c{1}".format(y, x)).setAttribute("title", state.map[y*size.width+x]);
+									context.querySelector(".tile.r{0}.c{1}".format(y, x)).setAttribute("title", state.map[y*state.size.width+x]);
 									context.querySelector(".tile.r{0}.c{1}".format(k-1, j)).remove();
 								} else break;
 							}
 
 							if(j != x || k != y) {
 								// Swap
-								state.map[k*size.width+j] = state.map[y*size.width+x];
-								state.map[y*size.width+x] = 0;
+								state.map[k*state.size.width+j] = state.map[y*state.size.width+x];
+								state.map[y*state.size.width+x] = 0;
 
 								context.querySelector(".tile.r{0}.c{1}".format(y, x)).setAttribute("class", "tile r{0} c{1}".format(k, j));
 
@@ -103,28 +106,28 @@ TwoZeroFourEight.events = function(state, res) {
 				}
 			} break;
 			case 83: { // KeyS
-				for(let y = size.height - 1; y >= 0 ; y--) {
-					for(let x = 0; x < size.width; x++) {
-						if(state.map[y*size.width+x] != 0) {
+				for(let y = state.size.height - 1; y >= 0 ; y--) {
+					for(let x = 0; x < state.size.width; x++) {
+						if(state.map[y*state.size.width+x] != 0) {
 							let j = x, k = y;
-							for(; k < size.height - 1; k++) {
-								if(state.map[(k+1)*size.width+j] == 0) {
+							for(; k < state.size.height - 1; k++) {
+								if(state.map[(k+1)*state.size.width+j] == 0) {
 									// If blank we can continue to move.
 									continue;
-								} else if(state.map[(k+1)*size.width+j] == state.map[y*size.width+x]) {
+								} else if(state.map[(k+1)*state.size.width+j] == state.map[y*state.size.width+x]) {
 									// Values are the same, so we continue to push.
-									state.map[y*size.width+x] += state.map[(k+1)*size.width+j];
-									state.map[(k+1)*size.width+j] = 0;
+									state.map[y*state.size.width+x] += state.map[(k+1)*state.size.width+j];
+									state.map[(k+1)*state.size.width+j] = 0;
 
-									context.querySelector(".tile.r{0}.c{1}".format(y, x)).setAttribute("title", state.map[y*size.width+x]);
+									context.querySelector(".tile.r{0}.c{1}".format(y, x)).setAttribute("title", state.map[y*state.size.width+x]);
 									context.querySelector(".tile.r{0}.c{1}".format(k+1, j)).remove();
 								} else break;
 							}
 
 							if(j != x || k != y) {
 								// Swap
-								state.map[k*size.width+j] = state.map[y*size.width+x];
-								state.map[y*size.width+x] = 0;
+								state.map[k*state.size.width+j] = state.map[y*state.size.width+x];
+								state.map[y*state.size.width+x] = 0;
 
 								context.querySelector(".tile.r{0}.c{1}".format(y, x)).setAttribute("class", "tile r{0} c{1}".format(k, j));
 
@@ -135,28 +138,28 @@ TwoZeroFourEight.events = function(state, res) {
 				}
 			} break;
 			case 65: { // KeyA
-				for(let x = 1; x < size.width; x++) {
-					for(let y = 0; y < size.height; y++) {
-						if(state.map[y*size.width+x] != 0) {
+				for(let x = 1; x < state.size.width; x++) {
+					for(let y = 0; y < state.size.height; y++) {
+						if(state.map[y*state.size.width+x] != 0) {
 							let j = x, k = y;
 							for(; j > 0; j--) {
-								if(state.map[y*size.width+j-1] == 0) {
+								if(state.map[y*state.size.width+j-1] == 0) {
 									// If blank we can continue to move.
 									continue;
-								} else if(state.map[k*size.width+j-1] == state.map[y*size.width+x]) {
+								} else if(state.map[k*state.size.width+j-1] == state.map[y*state.size.width+x]) {
 									// Values are the same, so we continue to push.
-									state.map[y*size.width+x] += state.map[k*size.width+j-1];
-									state.map[k*size.width+j-1] = 0;
+									state.map[y*state.size.width+x] += state.map[k*state.size.width+j-1];
+									state.map[k*state.size.width+j-1] = 0;
 
-									context.querySelector(".tile.r{0}.c{1}".format(y, x)).setAttribute("title", state.map[y*size.width+x]);
+									context.querySelector(".tile.r{0}.c{1}".format(y, x)).setAttribute("title", state.map[y*state.size.width+x]);
 									context.querySelector(".tile.r{0}.c{1}".format(k, j-1)).remove();
 								} else break;
 							}
 
 							if(j != x || k != y) {
 								// Swap
-								state.map[k*size.width+j] = state.map[y*size.width+x];
-								state.map[y*size.width+x] = 0;
+								state.map[k*state.size.width+j] = state.map[y*state.size.width+x];
+								state.map[y*state.size.width+x] = 0;
 
 								context.querySelector(".tile.r{0}.c{1}".format(y, x)).setAttribute("class", "tile r{0} c{1}".format(k, j));
 
@@ -167,28 +170,28 @@ TwoZeroFourEight.events = function(state, res) {
 				}
 			} break;
 			case 68: { // KeyD
-				for(let x = size.width - 1; x >= 0; x--) {
-					for(let y = 0; y < size.height; y++) {
-						if(state.map[y*size.width+x] != 0) {
+				for(let x = state.size.width - 1; x >= 0; x--) {
+					for(let y = 0; y < state.size.height; y++) {
+						if(state.map[y*state.size.width+x] != 0) {
 							let j = x, k = y;
-							for(; j < size.width - 1; j++) {
-								if(state.map[y*size.width+j+1] == 0) {
+							for(; j < state.size.width - 1; j++) {
+								if(state.map[y*state.size.width+j+1] == 0) {
 									// If blank we can continue to move.
 									continue;
-								} else if(state.map[k*size.width+j+1] == state.map[y*size.width+x]) {
+								} else if(state.map[k*state.size.width+j+1] == state.map[y*state.size.width+x]) {
 									// Values are the same, so we continue to push.
-									state.map[y*size.width+x] += state.map[k*size.width+j+1];
-									state.map[k*size.width+j+1] = 0;
+									state.map[y*state.size.width+x] += state.map[k*state.size.width+j+1];
+									state.map[k*state.size.width+j+1] = 0;
 
-									context.querySelector(".tile.r{0}.c{1}".format(y, x)).setAttribute("title", state.map[y*size.width+x]);
+									context.querySelector(".tile.r{0}.c{1}".format(y, x)).setAttribute("title", state.map[y*state.size.width+x]);
 									context.querySelector(".tile.r{0}.c{1}".format(k, j+1)).remove();
 								} else break;
 							}
 
 							if(j != x || k != y) {
 								// Swap
-								state.map[k*size.width+j] = state.map[y*size.width+x];
-								state.map[y*size.width+x] = 0;
+								state.map[k*state.size.width+j] = state.map[y*state.size.width+x];
+								state.map[y*state.size.width+x] = 0;
 
 								context.querySelector(".tile.r{0}.c{1}".format(y, x)).setAttribute("class", "tile r{0} c{1}".format(k, j));
 
@@ -203,45 +206,42 @@ TwoZeroFourEight.events = function(state, res) {
 		if(moved) {
 			// Add a random number into a random cell.
 			let spaces = [];
-			for(let i = 0; i < size.total; i++) if(state.map[i] == 0) spaces.push(i);
+			for(let i = 0; i < state.size.total; i++) if(state.map[i] == 0) spaces.push(i);
 			let space = spaces[Math.floor(Math.randomRange(0, spaces.length))];
 			let number = Math.random() > 0.5 ? 2 : 4;
 			state.map[space] = number;
-			context.innerHTML += '<span class="tile r{0} c{1}" title="{2}" />'.format(~~(space/size.height), space%size.width, number);
+			context.innerHTML += '<span class="tile r{0} c{1}" title="{2}" />'.format(~~(space/state.size.height), space%state.size.width, number);
 		}
 
-		timeout = 0;
+		state.timeout = 0;
 	}
 
-	timeout += delta;
+	state.timeout += Timing.delta;
 }
 
 /* Game update logic */
-TwoZeroFourEight.logic = function(state, res) {
+TwoZeroFourEight.logic = function(state, context, res) {
 
 }
 
 /* Renderer */
-TwoZeroFourEight.render = function(state, res) {
-	context.innerHTML = "";
-	for(let i = 0; i < size.total; i++) {
-		if(state.map[i] != 0) context.innerHTML += '<span class="tile r{0} c{1}" title="{2}" />'.format(~~(i/size.height), i%size.width, state.map[i]);
-	}
+TwoZeroFourEight.render = function(state, context, res) {
+
 }
 
 /* Gameloop */
 
 TwoZeroFourEight.loop = function() {
-	let now = window.performance.now();
-	delta = now - time;
-	time = now;
+	Timing.refresh();
 
-	TwoZeroFourEight.events(TwoZeroFourEight.State, TwoZeroFourEight.Resources);
-	// if (running) TwoZeroFourEight.logic(TwoZeroFourEight.State, TwoZeroFourEight.Resources);
-	// TwoZeroFourEight.render(TwoZeroFourEight.State, TwoZeroFourEight.Resources);
+	if (TwoZeroFourEight.State.running) {
+		TwoZeroFourEight.events(TwoZeroFourEight.State, TwoZeroFourEight.Context, TwoZeroFourEight.Resources);
+		TwoZeroFourEight.logic(TwoZeroFourEight.State, TwoZeroFourEight.Context, TwoZeroFourEight.Resources);
+	}
+	TwoZeroFourEight.render(TwoZeroFourEight.State, TwoZeroFourEight.Context, TwoZeroFourEight.Resources);
 
 	requestAnimationFrame(TwoZeroFourEight.loop);
 }
 
 /* Start */
-window.addEventListener("load", TwoZeroFourEight.init, false);
+addEventListener("load", function(){if(typeof Loader !== "undefined") Loader.register(TwoZeroFourEight);});

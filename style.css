@@ -39,7 +39,7 @@ a[disabled]:not([disabled="false"]) {
 /* Canvas formatting */
 body {
 	background: #111111;
-	overflow: hidden;
+	overflow-x: hidden;
 }
 
 html, body {

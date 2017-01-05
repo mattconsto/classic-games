@@ -27,7 +27,7 @@ var Loader = {
 	<div class="col s6 m4 l3">\
 		<div class="card">\
 			<div class="card-image">\
-				<a href="#!/play/{path}"><img src="games/{path}/screenshot.png" alt="{name}" /></a>\
+				<a href="#!/play/{path}"><img src="games/{path}/screenshot.png" alt="{name}" title="{description}" /></a>\
 			</div>\
 			<div class="card-action"><a href="#!/play/{path}">{name}</a></div>\
 		</div>\

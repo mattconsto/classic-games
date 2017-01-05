@@ -1,73 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<meta charset="UTF-8">
 	<title>Classic Games</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/css/materialize.min.css" />
 	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+
 	<link rel="stylesheet" href="style.css" />
 
 	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
+
+	<script src="games/2048/2048.js"></script>
+	<script src="games/asteroids/asteroids.js"></script>
+	<script src="games/flappybird/flappybird.js"></script>
+	<script src="games/minesweeper/minesweeper.js"></script>
+	<script src="games/pong/pong.js"></script>
+	<script src="games/snake/snake.js"></script>
+
 	<script src="common.js"></script>
+	<script src="loader.js"></script>
 </head>
 <body>
-
 	<nav>
 		<div class="nav-wrapper">
 			<ul class="left">
-				<li><a href="../" title="Return to GitHub"><i class="material-icons">arrow_back</i><i class="material-icons fa fa-github"></i></a></li>
+				<li id="back-github"><a href="../" title="Return to GitHub"><i class="material-icons">arrow_back</i><i class="material-icons fa fa-github"></i></a></li>
+				<li id="back-home"><a href="#!/list" title="Return to Game List"><i class="material-icons">arrow_back</i><i class="material-icons">home</i></a></li>
 			</ul>
 			<a class="brand-logo center">Classic Games</a>
-			<ul class="right">
-			</ul>
+			<ul class="right"></ul>
 		</div>
 	</nav>
 
-	<div class="container">
-		<div class="row">
-			<div class="col s3">
-				<div class="card">
-					<div class="card-image">
-						<a href="2048.html"><img src="games/2048/screenshot.png" alt="2048" /></a>
-					</div>
-					<div class="card-action"><a href="2048.html">Play 2048</a></div>
-				</div>
-			</div>
-			<div class="col s3">
-				<div class="card">
-					<div class="card-image">
-						<a href="asteroids.html"><img src="games/asteroids/screenshot.png" alt="Asteroids" /></a>
-					</div>
-					<div class="card-action"><a href="asteroids.html">Play Asteroids</a></div>
-				</div>
-			</div>
-			<div class="col s3">
-				<div class="card">
-					<div class="card-image">
-						<a href="minesweeper.html"><img src="games/minesweeper/screenshot.png" alt="Minesweeper" /></a>
-					</div>
-					<div class="card-action"><a href="minesweeper.html">Play Minesweeper</a></div>
-				</div>
-			</div>
-			<div class="col s3">
-				<div class="card">
-					<div class="card-image">
-						<a href="pong.html"><img src="games/pong/screenshot.png" alt="Pong" /></a>
-					</div>
-					<div class="card-action"><a href="pong.html">Play Pong</a></div>
-				</div>
-			</div>
-			<div class="col s3">
-				<div class="card">
-					<div class="card-image">
-						<a href="snake.html"><img src="games/snake/screenshot.png" alt="Snake" /></a>
-					</div>
-					<div class="card-action"><a href="snake.html">Play Snake</a></div>
-				</div>
-			</div>
-		</div>
-	</div>
-
+	<div id="wrapper"></div>
 </body>
 </html>
