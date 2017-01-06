@@ -7,6 +7,8 @@ HTML5 recreation of classic games. Play online: https://swft.co/classic-games
 
 * 2048
 * Asteroids
+* Flappybird
+* Fractal
 * Minesweeper
 * Pong
 * Snake

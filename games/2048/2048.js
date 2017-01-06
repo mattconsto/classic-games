@@ -223,7 +223,7 @@ TwoZeroFourEight.events = function(state, context, res) {
 TwoZeroFourEight.loop = function() {
 	Timing.refresh();
 
-	TwoZeroFourEight.render(TwoZeroFourEight.State, TwoZeroFourEight.Context, TwoZeroFourEight.Resources);
+	TwoZeroFourEight.events(TwoZeroFourEight.State, TwoZeroFourEight.Context, TwoZeroFourEight.Resources);
 
 	requestAnimationFrame(TwoZeroFourEight.loop);
 }

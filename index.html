@@ -16,13 +16,22 @@
 
 	<script src="common.js"></script>
 
-	<script>
-		["2048", "asteroids", "flappybird", "minesweeper", "pong", "snake"].forEach(function(game) {
+	<script src="games/2048/2048.js"></script>
+	<script src="games/asteroids/asteroids.js"></script>
+	<script src="games/flappybird/flappybird.js"></script>
+	<script src="games/fractal/fractal.js"></script>
+	<script src="games/minesweeper/minesweeper.js"></script>
+	<script src="games/pong/pong.js"></script>
+	<script src="games/snake/snake.js"></script>
+
+	<!-- <script>
+		let Games = ["2048", "asteroids", "flappybird", "fractal", "minesweeper", "pong", "snake"];
+		Games.forEach(function(game) {
 			var script = document.createElement('script');
 			script.setAttribute("src", "games/{0}/{0}.js".format(game));
 			document.getElementsByTagName("head")[0].appendChild(script);
 		});
-	</script>
+	</script> -->
 
 	<script src="loader.js"></script>
 </head>
