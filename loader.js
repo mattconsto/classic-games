@@ -33,7 +33,7 @@ var Loader = {
 	</div>'.formatApply(Loader.State.list[game].Info);
 		}
 
-		Loader.State.context.innerHTML = '<div class="container"><div class="row">{0}</div></div>'.format(html);
+		Loader.State.context.innerHTML = '<div class="container"><div class="row">{0}</div><div style="color: #efefef;">Created by <a href="https://github.com/mattconsto/">Matthew Consterdine</a></div></div>'.format(html);
 	},
 	play: function(game) {
 		if(Loader.State.dirty) {location.reload(); return;}
