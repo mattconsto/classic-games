@@ -19,14 +19,19 @@ var Resources = {
 			// Input is a string
 			if(root != null) input = root + input;
 			let extension = (/(?:\.([^.]+))?$/).exec(input)[1];
+			
 			if(typeof extension !== "undefined") {
 				switch(extension.toLowerCase()) {
-					case "bmp": case "gif": case "jpg": case "png": case "tif":
+					case "apng": case "bmp": case "gif": case "jpg": case "ico":
+					case "jpeg": case "jp2": case "j2k": case "jxr": case "mng":
+					case "png": case "svg": case "tif": case "tiff": case "webp":
 						let output = new Image();
 						output.src = input;
 						return output;
-					case "wav": case "mp2": case "mp3":
+					case "flac": case "ogg": case "mp2": case "mp3": case "wav":
 						return new Audio(input);
+					case "mp4": case "webm":
+						return new Video(input);
 					case "js":
 						var script = document.createElement('script');
 						script.src = input;
@@ -34,12 +39,11 @@ var Resources = {
 						return script;
 					case "json":
 						return JSON.parse(Resources.request(input));
-					case "csv": case "txt":
-						return Resources.request(input);
 					case "xml":
 						return new DOMParser().parseFromString(Resources.request(input), "text/xml");
+					case "csv": case "txt":
 					default:
-						console.error("Invalid extension: " + extension);
+						return Resources.request(input);
 				}
 			} else {
 				console.error("Resource extension missing: " + input);
