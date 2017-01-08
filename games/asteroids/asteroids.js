@@ -128,9 +128,6 @@ Asteroids.init = function(context) {
 	context.innerHTML = '<canvas id="canvas">Your browser doesn\'t support HTML5 Canvas!</canvas>';
 	Asteroids.Context = document.getElementById('canvas').getContext('2d');
 
-	Asteroids.Context.canvas.height = Asteroids.State.size.height;
-	Asteroids.Context.canvas.width  = Asteroids.State.size.width;
-
 	let resizefunc = function() {
 		console.log("Resize");
 		if(window.innerWidth < window.innerHeight-64) {

@@ -7,7 +7,7 @@ var Snake = {
 	Context: {},
 	State: {},
 	Resources: {
-		tilesheet: []
+		tilesheet: "games/snake/sprites.png"
 	},
 	Entities: {}
 };
@@ -27,11 +27,7 @@ Snake.init = function(context) {
 	context.innerHTML = '<canvas id="canvas">Your browser doesn\'t support HTML5 Canvas!</canvas>';
 	Snake.Context = document.getElementById('canvas').getContext('2d');
 
-	Snake.Context.canvas.height = Snake.State.size.height;
-	Snake.Context.canvas.width  = Snake.State.size.width;
-
-	Snake.Resources.tilesheet = new Image();
-	Snake.Resources.tilesheet.src = "games/snake/sprites.png"; // http://rembound.com/articles/creating-a-snake-game-tutorial-with-html5 Just the image, code is 100% original.
+	Snake.Resources = Resources.load(Snake.Resources);
 
 	let resizefunc = function() {
 		console.log("Resize");

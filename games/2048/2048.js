@@ -45,11 +45,11 @@ TwoZeroFourEight.init = function(context) {
 
 	let resizefunc = function() {
 		if(window.innerWidth*TwoZeroFourEight.State.size.height/TwoZeroFourEight.State.size.width < (window.innerHeight-104)) {
-			TwoZeroFourEight.Context.style.width  = window.innerWidth + "px";
-			TwoZeroFourEight.Context.style.height = window.innerWidth*TwoZeroFourEight.State.size.height/TwoZeroFourEight.State.size.width + "px";
+			document.getElementById("canvas-2048").style.width  = window.innerWidth + "px";
+			document.getElementById("canvas-2048").style.height = window.innerWidth*TwoZeroFourEight.State.size.height/TwoZeroFourEight.State.size.width + "px";
 		} else {
-			TwoZeroFourEight.Context.style.width  = (window.innerHeight-104)*TwoZeroFourEight.State.size.width/TwoZeroFourEight.State.size.height + "px";
-			TwoZeroFourEight.Context.style.height = (window.innerHeight-104) + "px";
+			document.getElementById("canvas-2048").style.width  = (window.innerHeight-104)*TwoZeroFourEight.State.size.width/TwoZeroFourEight.State.size.height + "px";
+			document.getElementById("canvas-2048").style.height = (window.innerHeight-104) + "px";
 		}
 	};
 	window.addEventListener("resize", resizefunc);

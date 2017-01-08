@@ -12,6 +12,10 @@ var Timing =  {
 	}
 }
 
+let deepSerializedClone = function() {
+	return JSON.parse(JSON.stringify(this));
+}
+
 String.prototype.format = function() {
 	var args = arguments;
 	return this.replace(/{(\d+)}/g, function(match, number) { 

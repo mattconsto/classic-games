@@ -18,8 +18,8 @@ var Pong = {
 		ai: false
 	},
 	Resources: {
-		blip: new Audio('games/pong/blip.wav'),
-		tone: new Audio('games/pong/tone.wav')
+		blip: "games/pong/blip.wav",
+		tone: "games/pong/tone.wav"
 	},
 	Entities: {}
 };
@@ -28,6 +28,8 @@ var Pong = {
 Pong.init = function(context) {
 	context.innerHTML = '<canvas id="canvas">Your browser doesn\'t support HTML5 Canvas!</canvas>';
 	Pong.Context = document.getElementById('canvas').getContext('2d');
+
+	Pong.Resources = Resources.load(Pong.Resources);
 
 	let resizefunc = function() {
 		if(window.innerWidth*Pong.State.size.height/Pong.State.size.width < (window.innerHeight-64)) {
