@@ -43,6 +43,27 @@ Complex.prototype.div = function(that) {
 
 Complex.prototype.inv = function() {return new Complex(1, 0).div(this);}
 
+function HSVtoRGB(h, s, v) {
+	var r, g, b, i, f, p, q, t;
+	if (arguments.length === 1) {
+		s = h.s, v = h.v, h = h.h;
+	}
+	i = Math.floor(h * 6);
+	f = h * 6 - i;
+	p = v * (1 - s);
+	q = v * (1 - f * s);
+	t = v * (1 - (1 - f) * s);
+	switch (i % 6) {
+		case 0: r = v, g = t, b = p; break;
+		case 1: r = q, g = v, b = p; break;
+		case 2: r = p, g = v, b = t; break;
+		case 3: r = p, g = q, b = v; break;
+		case 4: r = t, g = p, b = v; break;
+		case 5: r = v, g = p, b = q; break;
+	}
+	return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+}
+
 var Fractal = {
 	Info: {
 		name: "Fractal",
@@ -63,14 +84,19 @@ Fractal.init = function(context) {
 		size: {scale: 1, width: 200, height: 200, total: 200 * 200},
 		running: true,
 		generated: false,
+		rendered: false,
 		data: [],
+		scale: 64,
+		max: 64,
+		colourMap: [],
+		image: [],
 
 		start: -2.0,    // Range of the complex plane
 		stop: 2.0,
 		top: -1.6,
 		bottom: 1.6,
 
-		iterations: 25,      // Number of iterations to calculate
+		iterations: 500,      // Number of iterations to calculate
 		threshold: 2.0,     // Threshold
 		smooth: true,       // Fake decimal iteration count to produce smooth shading
 
@@ -92,9 +118,18 @@ Fractal.init = function(context) {
 		Fractal.Context.canvas.width  = window.innerWidth;
 		Fractal.Context.canvas.height = window.innerHeight-64;
 		Fractal.State.generated = false;
+		Fractal.State.scale = Fractal.State.max;
+		Fractal.State.image = Fractal.Context.createImageData(Fractal.Context.canvas.width, Fractal.Context.canvas.height);
+		for(let i = 0; i < Fractal.Context.canvas.width*Fractal.Context.canvas.height; i++) {
+			Fractal.State.image.data[i*4 + 3] = 255;
+		}
 	};
 	window.addEventListener("resize", resizefunc);
 	resizefunc();
+
+	// Precaculate for speed.
+	Fractal.State.colourMap[-1] = Fractal.State.colourMap[undefined] = [0, 0, 0];
+	for(let i = 0; i <= Fractal.State.iterations*10; i++) Fractal.State.colourMap[i/10] = HSVtoRGB(i / 100.0, 1.0, 1.0);
 
 	Fractal.loop();
 }
@@ -194,70 +229,67 @@ Fractal.generate = function(x, y) {
 	return 0;
 }
 
-function HSVtoRGB(h, s, v) {
-	var r, g, b, i, f, p, q, t;
-	if (arguments.length === 1) {
-		s = h.s, v = h.v, h = h.h;
-	}
-	i = Math.floor(h * 6);
-	f = h * 6 - i;
-	p = v * (1 - s);
-	q = v * (1 - f * s);
-	t = v * (1 - (1 - f) * s);
-	switch (i % 6) {
-		case 0: r = v, g = t, b = p; break;
-		case 1: r = q, g = v, b = p; break;
-		case 2: r = p, g = v, b = t; break;
-		case 3: r = p, g = q, b = v; break;
-		case 4: r = t, g = p, b = v; break;
-		case 5: r = v, g = p, b = q; break;
-	}
-	return {
-		r: Math.round(r * 255),
-		g: Math.round(g * 255),
-		b: Math.round(b * 255)
-	};
-}
-
-Fractal.color = function(iterations) {
-	if(iterations >= 0) {
-		return HSVtoRGB(iterations / 10.0, 1.0, 1.0);
-	} else {
-		return {r: 0, g: 0, b: 0};
-	}
-}
-
 Fractal.events = function(state, context, res) {
 
 }
 
 /* Game update logic */
 Fractal.logic = function(state, context, res) {
-	if(!state.generated) {
+	if(!state.generated || state.scale > 0) {
 		state.generated = true;
+		state.rendered = false;
 		console.log("Generate");
-		for(let y = 0; y < context.canvas.height; y++) {
-			for(let x = 0; x < context.canvas.width; x++) {
-				state.data[x+y*context.canvas.width] = Fractal.generate(x, y);
+
+		for(var y = 0; y < context.canvas.height; y += state.scale*2) {
+			for(var x = 0; x < context.canvas.width; x += state.scale*2) {
+				let result = Math.round(Fractal.generate(x, y)*10)/10;
+				for(let j = 0; j < state.scale*2; j++) {
+					for(let i = 0; i < state.scale*2; i++) {
+						state.data[x+i+(y+j)*context.canvas.width] = result;
+					}
+				}
 			}
 		}
+
+		for(var y = 0; y < context.canvas.height; y += state.scale*2) {
+			for(var x = state.scale; x < context.canvas.width; x += state.scale*2) {
+				let result = Math.round(Fractal.generate(x, y)*10)/10;
+				for(let j = 0; j < state.scale*2; j++) {
+					for(let i = 0; i < state.scale; i++) {
+						state.data[x+i+(y+j)*context.canvas.width] = result;
+					}
+				}
+			}
+		}
+
+		for(var y = state.scale; y < context.canvas.height; y += state.scale*2) {
+			for(var x = 0; x < context.canvas.width; x += state.scale) {
+				let result = Math.round(Fractal.generate(x, y)*10)/10;
+				for(let j = 0; j < state.scale; j++) {
+					for(let i = 0; i < state.scale; i++) {
+						state.data[x+i+(y+j)*context.canvas.width] = result;
+					}
+				}
+			}
+		}
+
+		state.timer = 0;
+		state.scale = Math.floor(state.scale/2);
 	}
 }
 
 /* Renderer */
 Fractal.render = function(state, context, res) {
-	let image = context.createImageData(context.canvas.width, context.canvas.height);
-	for(let y = 0; y < context.canvas.height; y++) {
-		for(let x = 0; x < context.canvas.width; x++) {
-			let color = Fractal.color(state.data[x+y*context.canvas.width]);
-			let offset = (x + y*context.canvas.width)*4;
-			image.data[offset + 0] = color.r;
-			image.data[offset + 2] = color.b;
-			image.data[offset + 3] = 255;
-			image.data[offset + 1] = color.g;
+	if(!state.rendered) {
+		state.rendered = true;
+		for(let i = 0; i < context.canvas.width*context.canvas.height; i++) {
+			let color = state.colourMap[state.data[i]];
+			state.image.data[i*4 + 0] = color[0];
+			state.image.data[i*4 + 1] = color[1];
+			state.image.data[i*4 + 2] = color[2];
 		}
+		context.putImageData(state.image, 0, 0);
 	}
-	context.putImageData(image, 0, 0);
 }
 
 /* Gameloop */
