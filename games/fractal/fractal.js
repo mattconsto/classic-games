@@ -1,4 +1,4 @@
-let Complex = function(r, i) {
+var Complex = function(r, i) {
 	this.r = r;
 	this.i = i;
 }
@@ -25,8 +25,8 @@ Complex.prototype.pow = function(power) {
 		case 10: return this.pow(5).pow(2);
 
 		default: {
-			let rn = Math.pow(Math.sqrt(Math.pow(this.r, 2) + Math.pow(this.i, 2)), power);
-			let th = Math.atan(this.i / this.r);
+			var rn = Math.pow(Math.sqrt(Math.pow(this.r, 2) + Math.pow(this.i, 2)), power);
+			var th = Math.atan(this.i / this.r);
 
 			return new Complex(rn * Math.cos(power * th), rn * Math.sin(power * th));
 		}
@@ -37,7 +37,7 @@ Complex.prototype.mod2 = function() {return this.r*this.r + this.i*this.i;}
 Complex.prototype.mul = function(that) {return new Complex(this.r*that.r - this.i*that.i, this.r*that.i + this.i*that.r);}
 
 Complex.prototype.div = function(that) {
-	let mod2 = that.mod2();
+	var mod2 = that.mod2();
 	return new Complex((this.r*that.r + this.i*that.i)/mod2, (this.i*that.r - this.r*that.i)/mod2);
 }
 
@@ -61,7 +61,7 @@ function HSVtoRGB(h, s, v) {
 		case 4: r = t, g = p, b = v; break;
 		case 5: r = v, g = p, b = q; break;
 	}
-	return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+	return (255 << 24) | (Math.round(b * 255) << 16) | (Math.round(g * 255) << 8) | Math.round(r * 255);
 }
 
 var Fractal = {
@@ -113,35 +113,40 @@ Fractal.init = function(context) {
 	context.innerHTML = '<canvas id="canvas">Your browser doesn\'t support HTML5 Canvas!</canvas>';
 	Fractal.Context = document.getElementById('canvas').getContext('2d');
 
-	let resizefunc = function() {
+	var resizefunc = function() {
 		console.log("Resize");
 		Fractal.Context.canvas.width  = window.innerWidth;
 		Fractal.Context.canvas.height = window.innerHeight-64;
 		Fractal.State.generated = false;
 		Fractal.State.scale = Fractal.State.max;
-		Fractal.State.image = Fractal.Context.createImageData(Fractal.Context.canvas.width, Fractal.Context.canvas.height);
-		for(let i = 0; i < Fractal.Context.canvas.width*Fractal.Context.canvas.height; i++) {
-			Fractal.State.image.data[i*4 + 3] = 255;
-		}
+
+		Fractal.Context.imageData = Fractal.Context.getImageData(0, 0, Fractal.Context.canvas.width, Fractal.Context.canvas.height);
+
+		for(var i = 0; i < Fractal.Context.imageData.data.length; i++) Fractal.Context.imageData.data[i*4 + 3] = 255;
+
+		Fractal.Context.buffer = new ArrayBuffer(Fractal.Context.imageData.data.length);
+		Fractal.Context.buffer8 = new Uint8ClampedArray(Fractal.Context.buffer);
+		Fractal.Context.buffer32 = new Uint32Array(Fractal.Context.buffer);
 	};
 	window.addEventListener("resize", resizefunc);
 	resizefunc();
 
 	// Precaculate for speed.
 	Fractal.State.colourMap[-1] = Fractal.State.colourMap[undefined] = [0, 0, 0];
-	for(let i = 0; i <= Fractal.State.iterations*10; i++) Fractal.State.colourMap[i/10] = HSVtoRGB(i / 100.0, 1.0, 1.0);
+	for(var i = 0; i <= Fractal.State.iterations*10; i++) Fractal.State.colourMap[i/10] = HSVtoRGB(i / 100.0, 1.0, 1.0);
 
-	Fractal.loop();
+	// Start the loop
+	requestAnimationFrame(Fractal.loop);
 }
 
 Fractal.generate = function(x, y) {
-	let past = new Complex(
+	var past = new Complex(
 		Fractal.State.start + (Fractal.State.stop   - Fractal.State.start) * x / Fractal.Context.canvas.width,
 		Fractal.State.top   + (Fractal.State.bottom - Fractal.State.top  ) * y / Fractal.Context.canvas.height
 	);
 
 	/* Using Infinity to indicate that there is no seed */
-	let base = Fractal.State.seedr == Infinity ? past : new Complex(Fractal.State.seedr, Fractal.State.seedi);
+	var base = Fractal.State.seedr == Infinity ? past : new Complex(Fractal.State.seedr, Fractal.State.seedi);
 
 	if(Fractal.State.inverse) {
 		base = base.inv();
@@ -151,14 +156,12 @@ Fractal.generate = function(x, y) {
 	const t = Fractal.State.threshold * Fractal.State.threshold;
 
 	/* For orbit traps */
-	let distancelength = Fractal.State.region == 1 ? 5 : (Fractal.State.region == 2 ? 4 : 1);
-	let distance = [];
+	var distancelength = Fractal.State.region == 1 ? 5 : (Fractal.State.region == 2 ? 4 : 1);
+	var distance = new Array(distancelength).fill(Infinity);
 
-	for(let i = 0; i < distancelength; i++) distance[i] = Infinity;
-
-	for(let i = 1; i < Fractal.State.iterations; i++) {
+	for(var i = 1; i < Fractal.State.iterations; i++) {
 		/* Square complex1, then add complex2 */
-		let current;
+		var current;
 
 		switch(Fractal.State.selected) {
 			default:
@@ -180,7 +183,7 @@ Fractal.generate = function(x, y) {
 		}
 
 		/* Modulus */
-		let modulus = current.mod2();
+		var modulus = current.mod2();
 
 		if(Fractal.State.orbit) {
 			if(Fractal.State.orbit == 1) {
@@ -190,7 +193,7 @@ Fractal.generate = function(x, y) {
 				if(modulus < distance[i % distancelength]) distance[i % distancelength] = modulus;
 			}
 
-			let pointer;
+			var pointer;
 			if(Fractal.State.region == 1) {
 				pointer = (current.i > 0 ? 1 : 0) + (current.r > 0 ? 2 : 0);
 			} else {
@@ -208,8 +211,8 @@ Fractal.generate = function(x, y) {
 		} else {
 			if(modulus > t) {
 				if(Fractal.State.smooth) {
-					let temp = past.mod2();
-					let k = (t - temp) / Math.abs(temp - modulus);
+					var temp = past.mod2();
+					var k = (t - temp) / Math.abs(temp - modulus);
 					if(k < 0) k = 0.0;
 					return i + k - 1;
 				} else {
@@ -229,9 +232,7 @@ Fractal.generate = function(x, y) {
 	return 0;
 }
 
-Fractal.events = function(state, context, res) {
-
-}
+Fractal.events = function(state, context, res) {}
 
 /* Game update logic */
 Fractal.logic = function(state, context, res) {
@@ -242,9 +243,9 @@ Fractal.logic = function(state, context, res) {
 
 		for(var y = 0; y < context.canvas.height; y += state.scale*2) {
 			for(var x = 0; x < context.canvas.width; x += state.scale*2) {
-				let result = Math.round(Fractal.generate(x, y)*10)/10;
-				for(let j = 0; j < state.scale*2; j++) {
-					for(let i = 0; i < state.scale*2; i++) {
+				var result = Math.round(Fractal.generate(x, y)*10)/10;
+				for(var j = 0; j < state.scale*2; j++) {
+					for(var i = 0; i < state.scale*2; i++) {
 						state.data[x+i+(y+j)*context.canvas.width] = result;
 					}
 				}
@@ -253,9 +254,9 @@ Fractal.logic = function(state, context, res) {
 
 		for(var y = 0; y < context.canvas.height; y += state.scale*2) {
 			for(var x = state.scale; x < context.canvas.width; x += state.scale*2) {
-				let result = Math.round(Fractal.generate(x, y)*10)/10;
-				for(let j = 0; j < state.scale*2; j++) {
-					for(let i = 0; i < state.scale; i++) {
+				var result = Math.round(Fractal.generate(x, y)*10)/10;
+				for(var j = 0; j < state.scale*2; j++) {
+					for(var i = 0; i < state.scale; i++) {
 						state.data[x+i+(y+j)*context.canvas.width] = result;
 					}
 				}
@@ -264,9 +265,9 @@ Fractal.logic = function(state, context, res) {
 
 		for(var y = state.scale; y < context.canvas.height; y += state.scale*2) {
 			for(var x = 0; x < context.canvas.width; x += state.scale) {
-				let result = Math.round(Fractal.generate(x, y)*10)/10;
-				for(let j = 0; j < state.scale; j++) {
-					for(let i = 0; i < state.scale; i++) {
+				var result = Math.round(Fractal.generate(x, y)*10)/10;
+				for(var j = 0; j < state.scale; j++) {
+					for(var i = 0; i < state.scale; i++) {
 						state.data[x+i+(y+j)*context.canvas.width] = result;
 					}
 				}
@@ -280,16 +281,15 @@ Fractal.logic = function(state, context, res) {
 
 /* Renderer */
 Fractal.render = function(state, context, res) {
-	if(!state.rendered) {
-		state.rendered = true;
-		for(let i = 0; i < context.canvas.width*context.canvas.height; i++) {
-			let color = state.colourMap[state.data[i]];
-			state.image.data[i*4 + 0] = color[0];
-			state.image.data[i*4 + 1] = color[1];
-			state.image.data[i*4 + 2] = color[2];
-		}
-		context.putImageData(state.image, 0, 0);
-	}
+	if(state.rendered) return;
+	state.rendered = true;
+
+	// Cache for performance
+	var limit = context.buffer32.length;
+	for(var i = 0; i < limit; i++) context.buffer32[i] = state.colourMap[state.data[i]];
+
+	context.imageData.data.set(context.buffer8);
+	context.putImageData(context.imageData, 0, 0);
 }
 
 /* Gameloop */
