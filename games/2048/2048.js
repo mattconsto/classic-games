@@ -72,7 +72,7 @@ TwoZeroFourEight.events = function(state, context, res) {
 		let moved = false;
 
 		switch(Keyboard.values().next().value) {
-			case 87: { // KeyW
+			case 87: case 73: case 38: { // KeyW
 				for(let y = 1; y < state.size.height; y++) {
 					for(let x = 0; x < state.size.width; x++) {
 						if(state.map[y*state.size.width+x] != 0) {
@@ -104,7 +104,7 @@ TwoZeroFourEight.events = function(state, context, res) {
 					}
 				}
 			} break;
-			case 83: { // KeyS
+			case 83: case 75: case 40: { // KeyS
 				for(let y = state.size.height - 1; y >= 0 ; y--) {
 					for(let x = 0; x < state.size.width; x++) {
 						if(state.map[y*state.size.width+x] != 0) {
@@ -136,7 +136,7 @@ TwoZeroFourEight.events = function(state, context, res) {
 					}
 				}
 			} break;
-			case 65: { // KeyA
+			case 65: case 74: case 37: { // KeyA
 				for(let x = 1; x < state.size.width; x++) {
 					for(let y = 0; y < state.size.height; y++) {
 						if(state.map[y*state.size.width+x] != 0) {
@@ -168,7 +168,7 @@ TwoZeroFourEight.events = function(state, context, res) {
 					}
 				}
 			} break;
-			case 68: { // KeyD
+			case 68: case 76: case 39: { // KeyD
 				for(let x = state.size.width - 1; x >= 0; x--) {
 					for(let y = 0; y < state.size.height; y++) {
 						if(state.map[y*state.size.width+x] != 0) {

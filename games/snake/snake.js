@@ -63,10 +63,10 @@ Snake.init = function(context) {
 
 Snake.events = function(state, context, res) {
 	if(Keyboard.size == 1) {
-		if(Keyboard.has(87) && state.direction != 2) state.direction = 0; // KeyW
-		if(Keyboard.has(68) && state.direction != 3) state.direction = 1; // KeyD
-		if(Keyboard.has(83) && state.direction != 0) state.direction = 2; // KeyS
-		if(Keyboard.has(65) && state.direction != 1) state.direction = 3; // KeyA
+		if((Keyboard.has(87) || Keyboard.has(73) || Keyboard.has(38)) && state.direction != 2) state.direction = 0; // KeyW
+		if((Keyboard.has(68) || Keyboard.has(76) || Keyboard.has(39)) && state.direction != 3) state.direction = 1; // KeyD
+		if((Keyboard.has(83) || Keyboard.has(75) || Keyboard.has(40)) && state.direction != 0) state.direction = 2; // KeyS
+		if((Keyboard.has(65) || Keyboard.has(74) || Keyboard.has(37)) && state.direction != 1) state.direction = 3; // KeyA
 	}
 }
 
