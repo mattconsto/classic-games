@@ -88,11 +88,12 @@ Fractal.init = function(context) {
 		data: [],
 		scale: 64,
 		max: 64,
+		min: 4,
 		colourMap: [],
 		image: [],
 
-		start: -2.0,    // Range of the complex plane
-		stop: 2.0,
+		start: -2.5,    // Range of the complex plane
+		stop: 1.5,
 		top: -1.6,
 		bottom: 1.6,
 
@@ -115,8 +116,10 @@ Fractal.init = function(context) {
 
 	var resizefunc = function() {
 		console.log("Resize");
-		Fractal.Context.canvas.width  = window.innerWidth;
-		Fractal.Context.canvas.height = window.innerHeight-64;
+
+		Fractal.Context.canvas.width  = Fractal.Context.canvas.parentElement.clientWidth;
+		Fractal.Context.canvas.height = Fractal.Context.canvas.parentElement.clientHeight;
+
 		Fractal.State.generated = false;
 		Fractal.State.scale = Fractal.State.max;
 
@@ -133,7 +136,7 @@ Fractal.init = function(context) {
 
 	// Precaculate for speed.
 	Fractal.State.colourMap[-1] = Fractal.State.colourMap[undefined] = [0, 0, 0];
-	for(var i = 0; i <= Fractal.State.iterations*10; i++) Fractal.State.colourMap[i/10] = HSVtoRGB(i / 100.0, 1.0, 1.0);
+	for(var i = 0; i <= Fractal.State.iterations; i++) Fractal.State.colourMap[i] = HSVtoRGB(i / 20.0, 1.0, 1.0);
 
 	// Start the loop
 	requestAnimationFrame(Fractal.loop);
@@ -236,36 +239,14 @@ Fractal.events = function(state, context, res) {}
 
 /* Game update logic */
 Fractal.logic = function(state, context, res) {
-	if(!state.generated || state.scale > 0) {
+	if(!state.generated || state.scale > Fractal.State.min) {
 		state.generated = true;
 		state.rendered = false;
 		console.log("Generate");
 
-		for(var y = 0; y < context.canvas.height; y += state.scale*2) {
-			for(var x = 0; x < context.canvas.width; x += state.scale*2) {
-				var result = Math.round(Fractal.generate(x, y)*10)/10;
-				for(var j = 0; j < state.scale*2; j++) {
-					for(var i = 0; i < state.scale*2; i++) {
-						state.data[x+i+(y+j)*context.canvas.width] = result;
-					}
-				}
-			}
-		}
-
-		for(var y = 0; y < context.canvas.height; y += state.scale*2) {
-			for(var x = state.scale; x < context.canvas.width; x += state.scale*2) {
-				var result = Math.round(Fractal.generate(x, y)*10)/10;
-				for(var j = 0; j < state.scale*2; j++) {
-					for(var i = 0; i < state.scale; i++) {
-						state.data[x+i+(y+j)*context.canvas.width] = result;
-					}
-				}
-			}
-		}
-
-		for(var y = state.scale; y < context.canvas.height; y += state.scale*2) {
+		for(var y = 0; y < context.canvas.height; y += state.scale) {
 			for(var x = 0; x < context.canvas.width; x += state.scale) {
-				var result = Math.round(Fractal.generate(x, y)*10)/10;
+				var result = Math.round(Fractal.generate(x, y));
 				for(var j = 0; j < state.scale; j++) {
 					for(var i = 0; i < state.scale; i++) {
 						state.data[x+i+(y+j)*context.canvas.width] = result;

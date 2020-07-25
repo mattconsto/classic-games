@@ -42,14 +42,15 @@ TwoZeroFourEight.init = function(context) {
 	</div>';
 
 	TwoZeroFourEight.Context = document.getElementById("tiles-2048");
+	TwoZeroFourEight.Context.canvas = TwoZeroFourEight.Context.parentElement.parentElement;
 
 	let resizefunc = function() {
-		if(window.innerWidth*TwoZeroFourEight.State.size.height/TwoZeroFourEight.State.size.width < (window.innerHeight-104)) {
-			document.getElementById("canvas-2048").style.width  = window.innerWidth + "px";
-			document.getElementById("canvas-2048").style.height = window.innerWidth*TwoZeroFourEight.State.size.height/TwoZeroFourEight.State.size.width + "px";
+		if(TwoZeroFourEight.Context.canvas.parentElement.clientWidth*TwoZeroFourEight.State.size.height/TwoZeroFourEight.State.size.width < TwoZeroFourEight.Context.canvas.parentElement.clientHeight) {
+			TwoZeroFourEight.Context.canvas.style.width  = TwoZeroFourEight.Context.canvas.parentElement.clientWidth + "px";
+			TwoZeroFourEight.Context.canvas.style.height = TwoZeroFourEight.Context.canvas.parentElement.clientWidth*TwoZeroFourEight.State.size.height/TwoZeroFourEight.State.size.width + "px";
 		} else {
-			document.getElementById("canvas-2048").style.width  = (window.innerHeight-104)*TwoZeroFourEight.State.size.width/TwoZeroFourEight.State.size.height + "px";
-			document.getElementById("canvas-2048").style.height = (window.innerHeight-104) + "px";
+			TwoZeroFourEight.Context.canvas.style.width  = TwoZeroFourEight.Context.canvas.parentElement.clientHeight*TwoZeroFourEight.State.size.width/TwoZeroFourEight.State.size.height + "px";
+			TwoZeroFourEight.Context.canvas.style.height = TwoZeroFourEight.Context.canvas.parentElement.clientHeight + "px";
 		}
 	};
 	window.addEventListener("resize", resizefunc);

@@ -18,36 +18,31 @@ var Pong = {
 		ai: false
 	},
 	Resources: {
-		blip: "games/pong/blip.wav",
-		tone: "games/pong/tone.wav"
+		blip: "blip.wav",
+		tone: "tone.wav"
 	},
 	Entities: {}
 };
 
 /* Initialization */
-Pong.init = function(context) {
+Pong.init = function(context, path) {
 	context.innerHTML = '<canvas id="canvas">Your browser doesn\'t support HTML5 Canvas!</canvas>';
 	Pong.Context = document.getElementById('canvas').getContext('2d');
 
-	Pong.Resources = Resources.load(Pong.Resources);
+	Pong.Resources = Resources.load(Pong.Resources, path ? path : 'games/pong/');
 
 	let resizefunc = function() {
-		if(window.innerWidth*Pong.State.size.height/Pong.State.size.width < (window.innerHeight-64)) {
-			Pong.Context.canvas.width  = window.innerWidth;
-			Pong.Context.canvas.height = window.innerWidth*Pong.State.size.height/Pong.State.size.width;
-			scale = Pong.Context.canvas.width/64;
+		if(Pong.Context.canvas.parentElement.clientWidth*Pong.State.size.height/Pong.State.size.width < Pong.Context.canvas.parentElement.clientHeight) {
+			Pong.Context.canvas.width  = Pong.Context.canvas.parentElement.clientWidth;
+			Pong.Context.canvas.height = Pong.Context.canvas.parentElement.clientWidth*Pong.State.size.height/Pong.State.size.width;
 		} else {
-			Pong.Context.canvas.width  = (window.innerHeight-64)*Pong.State.size.width/Pong.State.size.height;
-			Pong.Context.canvas.height = (window.innerHeight-64);
-			scale = Pong.Context.canvas.width/64;
+			Pong.Context.canvas.width  = Pong.Context.canvas.parentElement.clientHeight*Pong.State.size.width/Pong.State.size.height;
+			Pong.Context.canvas.height = Pong.Context.canvas.parentElement.clientHeight;
 		}
+		scale = Pong.Context.canvas.width/64;
 	};
 	window.addEventListener("resize", resizefunc);
 	resizefunc();
-
-	// document.getElementById('players-toggle').addEventListener("change", function(e) {
-	// 	ai = e.target.checked;
-	// });
 
 	Pong.loop();
 }

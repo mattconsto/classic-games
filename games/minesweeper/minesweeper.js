@@ -32,12 +32,12 @@ Minesweeper.init = function(context) {
 	Minesweeper.Context = document.getElementById('canvas-minesweeper');
 
 	let resizefunc = function() {
-		if(window.innerWidth*Minesweeper.State.size.height/Minesweeper.State.size.width < (window.innerHeight-64)) {
-			Minesweeper.Context.style.width  = window.innerWidth + "px";
-			Minesweeper.Context.style.height = window.innerWidth*Minesweeper.State.size.height/Minesweeper.State.size.width + "px";
+		if(Minesweeper.Context.parentElement.clientWidth*Minesweeper.State.size.height/Minesweeper.State.size.width < Minesweeper.Context.parentElement.clientHeight) {
+			Minesweeper.Context.style.width  = Minesweeper.Context.parentElement.clientWidth + "px";
+			Minesweeper.Context.style.height = Minesweeper.Context.parentElement.clientWidth*Minesweeper.State.size.height/Minesweeper.State.size.width + "px";
 		} else {
-			Minesweeper.Context.style.width  = (window.innerHeight-64)*Minesweeper.State.size.width/Minesweeper.State.size.height + "px";
-			Minesweeper.Context.style.height = (window.innerHeight-64) + "px";
+			Minesweeper.Context.style.width  = Minesweeper.Context.parentElement.clientHeight*Minesweeper.State.size.width/Minesweeper.State.size.height + "px";
+			Minesweeper.Context.style.height = Minesweeper.Context.parentElement.clientHeight + "px";
 		}
 	};
 	window.addEventListener("resize", resizefunc);
@@ -150,7 +150,6 @@ let handleButton = function(e, x, y) {
 			for(let i = 0; i < Minesweeper.State.bombs; i++) {
 				let position = Math.floor(Math.randomRange(0, Minesweeper.State.map.length));
 				if(Minesweeper.State.map[position].value == -1) {
-					console.log("collision: " + position);
 					if(limit2-- > 0) {
 						i--; // Keep looking.
 					} else {
@@ -174,8 +173,6 @@ let handleButton = function(e, x, y) {
 		} while(Minesweeper.State.map[x+y*Minesweeper.State.size.width].value != 0 && limit1-- > 0);
 	}
 	if(Minesweeper.State.state == "over") return;
-
-	console.log("done");
 
 	let cell = Minesweeper.State.map[x+y*Minesweeper.State.size.width];
 

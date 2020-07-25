@@ -66,5 +66,3 @@ NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
 		}
 	}
 }
-
-// $(document).ready(function(){$('.modal').modal();});

@@ -7,13 +7,13 @@ var Snake = {
 	Context: {},
 	State: {},
 	Resources: {
-		tilesheet: "games/snake/sprites.png"
+		tilesheet: "sprites.png"
 	},
 	Entities: {}
 };
 
 /* Initialization */
-Snake.init = function(context) {
+Snake.init = function(context, path) {
 	Snake.State = {
 		size: {scale: 1, width: 20, height: 20, total: 20 * 20},
 		pellets: [],
@@ -27,16 +27,15 @@ Snake.init = function(context) {
 	context.innerHTML = '<canvas id="canvas">Your browser doesn\'t support HTML5 Canvas!</canvas>';
 	Snake.Context = document.getElementById('canvas').getContext('2d');
 
-	Snake.Resources = Resources.load(Snake.Resources);
+	Snake.Resources = Resources.load(Snake.Resources, path ? path : 'games/snake/');
 
 	let resizefunc = function() {
-		console.log("Resize");
-		if(window.innerWidth < window.innerHeight-64) {
-			Snake.Context.canvas.width  = window.innerWidth;
-			Snake.Context.canvas.height = window.innerWidth;
+		if(Snake.Context.canvas.parentElement.clientWidth < Snake.Context.canvas.parentElement.clientHeight) {
+			Snake.Context.canvas.width  = Snake.Context.canvas.parentElement.clientWidth;
+			Snake.Context.canvas.height = Snake.Context.canvas.parentElement.clientWidth;
 		} else {
-			Snake.Context.canvas.width  = (window.innerHeight-64)*Snake.State.size.height/Snake.State.size.width;
-			Snake.Context.canvas.height = (window.innerHeight-64);
+			Snake.Context.canvas.width  = Snake.Context.canvas.parentElement.clientHeight*Snake.State.size.height/Snake.State.size.width;
+			Snake.Context.canvas.height = Snake.Context.canvas.parentElement.clientHeight;
 		}
 	};
 	window.addEventListener("resize", resizefunc);
@@ -183,7 +182,7 @@ Snake.render = function(state, context, res) {
 			}
 		}
 
-		context.drawImage(Snake.Resources.tilesheet, 0, 64*tile, 64, 64, -xs/2, -ys/2, xs, ys);
+		context.drawImage(Snake.Resources.tilesheet, 0, 64*tile - 0.5, 64, 64, -xs/2, -ys/2, xs, ys);
 		context.restore();
 	}
 }

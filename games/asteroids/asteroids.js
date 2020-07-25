@@ -7,8 +7,8 @@ var Asteroids = {
 	Context: {},
 	State: {},
 	Resources: {
-		blip: new Audio('games/asteroids/blip.wav'),
-		tone: new Audio('games/asteroids/tone.wav')
+		blip: 'blip.wav',
+		tone: 'tone.wav'
 	},
 	Entities: {}
 };
@@ -112,7 +112,7 @@ Asteroids.Entities.Ship = function(x, y) {
 }
 
 /* Initialization */
-Asteroids.init = function(context) {
+Asteroids.init = function(context, path) {
 	Asteroids.State = {
 		size: {scale: 16, width: 512, height: 512, total: 512 * 512},
 		score: 0,
@@ -125,20 +125,20 @@ Asteroids.init = function(context) {
 		running: true
 	};
 
+	Asteroids.Resources = Resources.load(Asteroids.Resources, path ? path : 'games/asteroids/');
+
 	context.innerHTML = '<canvas id="canvas">Your browser doesn\'t support HTML5 Canvas!</canvas>';
 	Asteroids.Context = document.getElementById('canvas').getContext('2d');
 
 	let resizefunc = function() {
-		console.log("Resize");
-		if(window.innerWidth < window.innerHeight-64) {
-			Asteroids.Context.canvas.width  = window.innerWidth;
-			Asteroids.Context.canvas.height = window.innerWidth;
-			Asteroids.State.size.scale = Asteroids.Context.canvas.width/50;
+		if(Asteroids.Context.canvas.parentElement.clientWidth < Asteroids.Context.canvas.parentElement.clientHeight) {
+			Asteroids.Context.canvas.width  = Asteroids.Context.canvas.parentElement.clientWidth;
+			Asteroids.Context.canvas.height = Asteroids.Context.canvas.parentElement.clientWidth;
 		} else {
-			Asteroids.Context.canvas.width  = (window.innerHeight-64)*Asteroids.State.size.height/Asteroids.State.size.width;
-			Asteroids.Context.canvas.height = (window.innerHeight-64);
-			Asteroids.State.size.scale = Asteroids.Context.canvas.width/50;
+			Asteroids.Context.canvas.width  = Asteroids.Context.canvas.parentElement.clientHeight*Asteroids.State.size.height/Asteroids.State.size.width;
+			Asteroids.Context.canvas.height = Asteroids.Context.canvas.parentElement.clientHeight;
 		}
+		Asteroids.State.size.scale = Asteroids.Context.canvas.width/50;
 	};
 	window.addEventListener("resize", resizefunc);
 	resizefunc();
@@ -159,9 +159,8 @@ Asteroids.events = function(state, context, res) {
 	if(Keyboard.has(68) && !Keyboard.has(65)) {state.ship.a += Timing.delta*0.01;} // KeyD
 
 	if(Keyboard.has(32) && state.ship.lastbullet >= 400) {
-		console.log("Fire");
 		state.ship.lastbullet = 0;
-		res.blip.play();
+		if (res.blip && res.blip.play) res.blip.play();
 		state.bullets.push(new Asteroids.Entities.Bullet(state.ship));
 	}
 }
@@ -189,10 +188,10 @@ Asteroids.logic = function(state, context, res) {
 				state.score += 1;
 				state.asteroids.splice(a, 1);
 
-				res.tone.play();
+				if(res.tone && res.tone.play) res.tone.play();
 				setTimeout(function(){
-					res.tone.currentTime = 0;
-					res.tone.pause();
+					if(res.tone) res.tone.currentTime = 0;
+					if(res.tone && res.tone.pause) res.tone.pause();
 					Asteroids.State.running = true;
 				}, 200);
 				return;
@@ -217,10 +216,10 @@ Asteroids.logic = function(state, context, res) {
 			Asteroids.State.running = false;
 			state.ship = new Asteroids.Entities.Ship(0.5, 0.5);
 
-			res.tone.play();
+			if(res.tone && res.tone.play) res.tone.play();
 			setTimeout(function(){
-				res.tone.currentTime = 0;
-				res.tone.pause();
+				if(res.tone) res.tone.currentTime = 0;
+				if(res.tone && res.tone.pause) res.tone.pause();
 				Asteroids.State.running = true;
 			}, 1000);
 
