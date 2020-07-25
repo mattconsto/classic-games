@@ -53,6 +53,7 @@ html, body {
 
 #wrapper {
 	flex-grow: 1;
+	height: 100%;
 }
 
 .card-image > a {

@@ -236,17 +236,20 @@ Asteroids.logic = function(state, context, res) {
 
 /* Renderer */
 Asteroids.render = function(state, context, res) {
-	context.font = "20px Silkscreen";
+	var font_size = Math.min(20, Math.max(5, Math.round(2 * Asteroids.State.size.scale)));
+	context.font = font_size + "px Silkscreen";
 	context.fillStyle = "#000000";
 	context.fillRect(0, 0, context.canvas.width, context.canvas.height);
 
 	context.fillStyle   = "#ffffff";
 	context.strokeStyle = "#ffffff";
 
-	context.fillText("Score: " + state.score, 20, 35);
-	context.fillText("Lives: " + state.lives, 20, 70);
+	context.fillText("Score: " + state.score, font_size, 2 * font_size);
+	context.fillText("Lives: " + state.lives, font_size, 4 * font_size);
 
 	[state.asteroids, state.bullets, state.debris, [state.ship]].forEach(function(a) {a.forEach(function(b) {b.render(context);})});
+
+	context.strokeRect(0, 0, context.canvas.width - 1, context.canvas.height - 1);
 }
 
 /* Gameloop */
