@@ -54,6 +54,14 @@ html, body {
 #wrapper {
 	flex-grow: 1;
 	height: 100%;
+	position: relative;
+}
+
+#wrapper > * {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
 }
 
 .card-image > a {
@@ -66,7 +74,6 @@ html, body {
 }
 
 #canvas {
-	margin: 0 auto;
 	display: block;
 	image-rendering: pixelated;
 }

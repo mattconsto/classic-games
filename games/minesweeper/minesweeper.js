@@ -34,10 +34,10 @@ Minesweeper.init = function(context) {
 	let resizefunc = function() {
 		if(Minesweeper.Context.parentElement.clientWidth*Minesweeper.State.size.height/Minesweeper.State.size.width < Minesweeper.Context.parentElement.clientHeight) {
 			Minesweeper.Context.style.width  = Minesweeper.Context.parentElement.clientWidth + "px";
-			Minesweeper.Context.style.height = Minesweeper.Context.parentElement.clientWidth*Minesweeper.State.size.height/Minesweeper.State.size.width + "px";
+			// Minesweeper.Context.style.height = Minesweeper.Context.parentElement.clientWidth*Minesweeper.State.size.height/Minesweeper.State.size.width + "px";
 		} else {
 			Minesweeper.Context.style.width  = Minesweeper.Context.parentElement.clientHeight*Minesweeper.State.size.width/Minesweeper.State.size.height + "px";
-			Minesweeper.Context.style.height = Minesweeper.Context.parentElement.clientHeight + "px";
+			// Minesweeper.Context.style.height = Minesweeper.Context.parentElement.clientHeight + "px";
 		}
 	};
 	window.addEventListener("resize", resizefunc);
