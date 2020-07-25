@@ -7,11 +7,11 @@ var Minesweeper = {
 	Context: {},
 	State: {
 		map: [],
-		bombs: 16,
+		bombs: 20,
 		time: 0,
 		state: "pause",
 		running: true,
-		size: {scale: 1, width: 8, height: 8, total: 8 * 8}
+		size: {scale: 1, width: 10, height: 8, total: 10 * 8}
 	},
 	Resources: {},
 	Entities: {}

@@ -15,7 +15,7 @@ var Snake = {
 /* Initialization */
 Snake.init = function(context, path) {
 	Snake.State = {
-		size: {scale: 1, width: 20, height: 20, total: 20 * 20},
+		size: {scale: 1, width: 25, height: 20, total: 25 * 20},
 		pellets: [],
 		snake: [{x:10,y:9}, {x:10,y:10}],
 		direction: 0,
@@ -34,7 +34,7 @@ Snake.init = function(context, path) {
 			Snake.Context.canvas.width  = Snake.Context.canvas.parentElement.clientWidth;
 			Snake.Context.canvas.height = Snake.Context.canvas.parentElement.clientWidth;
 		} else {
-			Snake.Context.canvas.width  = Snake.Context.canvas.parentElement.clientHeight*Snake.State.size.height/Snake.State.size.width;
+			Snake.Context.canvas.width  = Snake.Context.canvas.parentElement.clientHeight*Snake.State.size.width/Snake.State.size.height;
 			Snake.Context.canvas.height = Snake.Context.canvas.parentElement.clientHeight;
 		}
 	};
