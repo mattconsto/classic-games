@@ -1,9 +1,9 @@
 classic-games
 =============
 
-HTML5 recreation of classic games. Play online: https://swft.co/classic-games
+HTML5 recreation of classic games. Play online: https://consto.uk/classic-games
 
-![](screenshot.png)
+[![](screenshot.png)](https://consto.uk/classic-games)
 
 ### Games
 
