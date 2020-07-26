@@ -115,6 +115,7 @@ Fractal.init = function(context) {
 	context.innerHTML = '<canvas id="canvas">Your browser doesn\'t support HTML5 Canvas!</canvas>';
 	Fractal.Context = document.getElementById('canvas').getContext('2d');
 	Fractal.Context.canvas = document.getElementById('canvas');
+	Fractal.Context.canvas.style.width = "100%";
 
 	var resizefunc = function() {
 		console.log("Resize");
