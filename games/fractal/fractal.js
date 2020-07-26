@@ -318,6 +318,10 @@ Fractal.events = function(state, context, res) {
 		state.bottom -= deltaY;
 		window.dispatchEvent(new Event('resize'));
 	}
+	if(Keyboard.delete(69)) { // e
+		state.order = Math.max(2, (state.order + 1) % 7);
+		window.dispatchEvent(new Event('resize'));
+	}
 	if(Keyboard.delete(70)) { // f
 		state.selected = (state.selected + 1) % 5;
 		window.dispatchEvent(new Event('resize'));
