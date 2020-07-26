@@ -14,19 +14,42 @@
 </head>
 <body>
 	<style>
-		body {background: #f00}
-		canvas {width: 100%; height: 100%; image-rendering: pixelated; image-rendering: crisp-edges; cursor: move}
-		#buttons {position: fixed; left: 1em; top: 1em; right: 1em;}
+		body {
+			background: #f00;
+		}
+		#wrapper > canvas {
+			width: 100%;
+			height: 100%;
+			image-rendering: pixelated;
+			image-rendering: crisp-edges;
+			cursor: move;
+			position: relative;
+			top: 0;
+			left: 0;
+			transform: none;
+		}
+		#buttons-left {
+			position: fixed;
+			left: 1em;
+			top: 1em;
+		}
+		#buttons-right {
+			position: fixed;
+			top: 1em;
+			right: 1em;
+		}
 	</style>
 	<div id="wrapper"></div>
-	<div id="buttons">
+	<div id="buttons-left">
 		<a class="btn-floating waves-effect waves-light white" title="Change Fractal (f)"><i class="material-icons black-text" onclick="document.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':70}))">graphic_eq</i></a>
 		<a class="btn-floating waves-effect waves-light white" title="Invert Fractal (i)"><i class="material-icons black-text" onclick="document.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':73}))">invert_colors</i></a>
 		<a class="btn-floating waves-effect waves-light white" title="Change Exponent (e)"><i class="material-icons black-text" onclick="document.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':69}))">filter_tilt_shift</i></a>
 		<a class="btn-floating waves-effect waves-light white" title="View Orbit Trails (o)"><i class="material-icons black-text" onclick="document.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':79}))">gesture</i></a>
 		<a class="btn-floating waves-effect waves-light white" id="julia-button" title="View Julia Set (j)"><i class="material-icons black-text" onclick="document.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':74}))">place</i></a>
 		<a class="btn-floating waves-effect waves-light white" id="home-button" style="display: none" title="Return to Fractal (j)"><i class="material-icons black-text" onclick="document.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':74}))">home</i></a>
-		<a class="btn-floating waves-effect waves-light white" style="float: right" title="View High Quality (p)"><i class="material-icons black-text" onclick="document.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':80}))">high_quality</i></a>
+	</div>
+	<div id="buttons-right">
+		<a class="btn-floating waves-effect waves-light white" title="View High Quality (p)"><i class="material-icons black-text" onclick="document.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':80}))">high_quality</i></a>
 	</div>
 </body>
 </html>

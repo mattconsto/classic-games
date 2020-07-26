@@ -153,14 +153,37 @@ Fractal.init = function(context) {
 		window.dispatchEvent(new Event('resize'));
 	});
 
-	Fractal.Context.canvas.addEventListener("mousedown", function(e) {
+	window.addEventListener("mousedown", function(e) {
+		if (e.target.nodeName.toLowerCase() != 'canvas') return;
+
 		if(!Fractal.State.juliaEnabled) {
 			Fractal.State.startX = e.x;
 			Fractal.State.startY = e.y;
 		}
 	});
 
-	Fractal.Context.canvas.addEventListener("mouseup", function(e) {
+	window.addEventListener("mousemove", function(e) {
+		if (e.target.nodeName.toLowerCase() != 'canvas') return;
+
+		if(!Fractal.State.juliaEnabled && Fractal.State.startX && Fractal.State.startY) {
+			var changeX = (e.x - Fractal.State.startX);
+			var changeY = (e.y - Fractal.State.startY);
+			Fractal.Context.canvas.style.left = changeX + "px";
+			Fractal.Context.canvas.style.top = changeY + "px";
+		}
+	});
+
+	window.addEventListener("mouseup", function(e) {
+		if ((Fractal.State.startX == undefined || Fractal.State.startY == undefined) && !Fractal.State.juliaEnabled) return;
+
+		if (e.target.nodeName.toLowerCase() != 'canvas') {
+			Fractal.Context.canvas.style.left = 0;
+			Fractal.Context.canvas.style.top = 0;
+			delete Fractal.State.startX;
+			delete Fractal.State.startY;
+			return;
+		}
+
 		if(!Fractal.State.juliaEnabled) {
 			var changeX = (e.x - Fractal.State.startX) / e.target.clientWidth;
 			var changeY = (e.y - Fractal.State.startY) / e.target.clientHeight;
@@ -180,6 +203,10 @@ Fractal.init = function(context) {
 			Fractal.State.juliaEnabled = false;
 			Fractal.Context.canvas.style.cursor = 'move';
 		}
+			Fractal.Context.canvas.style.left = 0;
+			Fractal.Context.canvas.style.top = 0;
+		delete Fractal.State.startX;
+		delete Fractal.State.startY;
 		window.dispatchEvent(new Event('resize'));
 	});
 
