@@ -215,8 +215,8 @@ Asteroids.init = function(context, path) {
 
 		Asteroids.State.touching = e.changedTouches[0].identifier;
 		var rect = e.changedTouches[0].target.getBoundingClientRect();
-		Asteroids.State.moveX = Math.sign(Math.round(6 * (e.changedTouches[0].clientX - rect.left) / e.target.clientWidth) - 3);
-		Asteroids.State.moveY = Math.sign(Math.round(6 * (e.changedTouches[0].clientY - rect.top) / e.target.clientHeight) - 3);
+		Asteroids.State.moveX = Math.sign(Math.round(4 * (e.changedTouches[0].clientX - rect.left) / e.target.clientWidth) - 2);
+		Asteroids.State.moveY = Math.sign(Math.round(4 * (e.changedTouches[0].clientY - rect.top) / e.target.clientHeight) - 2);
 	});
 
 	Asteroids.Context.canvas.addEventListener("touchmove", function(e) {
@@ -228,8 +228,8 @@ Asteroids.init = function(context, path) {
 		for (var touch of e.changedTouches) {
 			if(Asteroids.State.touching == touch.identifier) {
 				var rect = touch.target.getBoundingClientRect();
-				Asteroids.State.moveX = Math.sign(Math.round(6 * (touch.clientX - rect.left) / e.target.clientWidth) - 3);
-				Asteroids.State.moveY = Math.sign(Math.round(6 * (touch.clientY - rect.top) / e.target.clientHeight) - 3);
+				Asteroids.State.moveX = Math.sign(Math.round(4 * (touch.clientX - rect.left) / e.target.clientWidth) - 2);
+				Asteroids.State.moveY = Math.sign(Math.round(4 * (touch.clientY - rect.top) / e.target.clientHeight) - 2);
 				break;
 			}
 		}

@@ -44,6 +44,44 @@ Pong.init = function(context, path) {
 	window.addEventListener("resize", resizefunc);
 	resizefunc();
 
+	let touchfunc = function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+
+		for (var touch of e.changedTouches) {
+			var rect = touch.target.getBoundingClientRect();
+			var x = Math.sign(Math.round((touch.clientX - rect.left) / e.target.clientWidth));
+			var y = Math.sign(Math.round((touch.clientY - rect.top) / e.target.clientHeight));
+			if(x == 0) {
+				Keyboard[y == 0 ? "add" : "delete"](87);
+				Keyboard[y == 1 ? "add" : "delete"](83);
+			} else if (x == 1) {
+				Keyboard[y == 0 ? "add" : "delete"](38);
+				Keyboard[y == 1 ? "add" : "delete"](40);
+			}
+		}
+	}
+
+	Pong.Context.canvas.addEventListener("touchstart", touchfunc);
+	Pong.Context.canvas.addEventListener("touchmove", touchfunc);
+	Pong.Context.canvas.addEventListener("touchend", function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+
+		for (var touch of e.changedTouches) {
+			var rect = touch.target.getBoundingClientRect();
+			var x = Math.sign(Math.round((touch.clientX - rect.left) / e.target.clientWidth));
+			var y = Math.sign(Math.round((touch.clientY - rect.top) / e.target.clientHeight));
+			if(x == 0) {
+				Keyboard.delete(87);
+				Keyboard.delete(83);
+			} else if (x == 1) {
+				Keyboard.delete(38);
+				Keyboard.delete(40);
+			}
+		}
+	});
+
 	Pong.loop();
 }
 
