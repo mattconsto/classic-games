@@ -56,6 +56,44 @@ TwoZeroFourEight.init = function(context) {
 	window.addEventListener("resize", resizefunc);
 	resizefunc();
 
+	TwoZeroFourEight.Context.canvas.addEventListener("mousedown", function(e) {
+		if(TwoZeroFourEight.State.touching) return;
+		TwoZeroFourEight.State.dragging = true;
+		TwoZeroFourEight.State.startX = e.x;
+		TwoZeroFourEight.State.startY = e.y;
+	});
+
+	TwoZeroFourEight.Context.canvas.addEventListener("mouseup", function(e) {
+		if(TwoZeroFourEight.State.touching) return;
+		TwoZeroFourEight.State.dragging = false;
+		TwoZeroFourEight.HandleGestures(
+			e.x - TwoZeroFourEight.State.startX,
+			e.y - TwoZeroFourEight.State.startY
+		);
+	});
+
+	TwoZeroFourEight.Context.canvas.addEventListener("touchstart", function(e) {
+		if(TwoZeroFourEight.State.dragging) return;
+		TwoZeroFourEight.State.touching = e.changedTouches[0].identifier;
+		TwoZeroFourEight.State.startX = e.changedTouches[0].clientX;
+		TwoZeroFourEight.State.startY = e.changedTouches[0].clientY;
+	});
+
+	TwoZeroFourEight.Context.canvas.addEventListener("touchend", function(e) {
+		if(TwoZeroFourEight.State.dragging) return;
+
+		for (var touch of e.changedTouches) {
+			if(TwoZeroFourEight.State.touching == touch.identifier) {
+				TwoZeroFourEight.State.touching = false;
+				TwoZeroFourEight.HandleGestures(
+					e.changedTouches[0].clientX - TwoZeroFourEight.State.startX,
+					e.changedTouches[0].clientY - TwoZeroFourEight.State.startY
+				);
+				break;
+			}
+		}
+	});
+
 	TwoZeroFourEight.State.map[Math.round(Math.randomRange(0, TwoZeroFourEight.State.size.total))] = 2;
 	TwoZeroFourEight.State.map[Math.round(Math.randomRange(0, TwoZeroFourEight.State.size.total))] = 2;
 	TwoZeroFourEight.State.map[Math.round(Math.randomRange(0, TwoZeroFourEight.State.size.total))] = 2;
@@ -68,11 +106,29 @@ TwoZeroFourEight.init = function(context) {
 	TwoZeroFourEight.loop();
 }
 
+TwoZeroFourEight.HandleGestures = function(dx, dy) {
+	var biggest = Math.max(dx, -dx, dy, -dy);
+	if(biggest <= 25) return;
+
+	if(dx == biggest) { // right
+		document.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':39}));
+	} else if(-dx == biggest) { // left
+		document.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':37}));
+	} else if(dy == biggest) { // down
+		document.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':40}));
+	} else if(-dy == biggest) { // up
+		document.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':38}));
+	}
+}
+
 TwoZeroFourEight.events = function(state, context, res) {
 	if(state.timeout >= 200 && Keyboard.size == 1) {
 		let moved = false;
 
-		switch(Keyboard.values().next().value) {
+		let value = Keyboard.values().next().value;
+		Keyboard.delete(value);
+
+		switch(value) {
 			case 87: case 73: case 38: { // KeyW
 				for(let y = 1; y < state.size.height; y++) {
 					for(let x = 0; x < state.size.width; x++) {
