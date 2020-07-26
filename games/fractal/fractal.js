@@ -178,6 +178,7 @@ Fractal.init = function(context) {
 			Fractal.State.seedr = placeX;
 			Fractal.State.seedi = placeY;
 			Fractal.State.juliaEnabled = false;
+			Fractal.Context.canvas.style.cursor = 'move';
 		}
 		window.dispatchEvent(new Event('resize'));
 	});
@@ -339,14 +340,15 @@ Fractal.events = function(state, context, res) {
 			homeButton.style.display = 'none';
 			juliaButton.style.display = '';
 			state.juliaEnabled = false;
+			context.canvas.style.cursor = 'move';
 			state.seedr = Infinity;
 			state.seedi = Infinity;
 			window.dispatchEvent(new Event('resize'));
 		} else {
-			alert("Click on the fractal to view the Julia Set");
 			homeButton.style.display = '';
 			juliaButton.style.display = 'none';
 			state.juliaEnabled = true;
+			context.canvas.style.cursor = 'crosshair';
 		}
 	}
 	if(Keyboard.delete(79)) { // o
