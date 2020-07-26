@@ -108,7 +108,7 @@ TwoZeroFourEight.init = function(context) {
 
 TwoZeroFourEight.HandleGestures = function(dx, dy) {
 	var biggest = Math.max(dx, -dx, dy, -dy);
-	if(biggest <= 25) return;
+	if(biggest <= 10) return;
 
 	if(dx == biggest) { // right
 		document.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':39}));
