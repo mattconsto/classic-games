@@ -173,7 +173,6 @@ Asteroids.init = function(context, path) {
 	Asteroids.Context.canvas.addEventListener("mousedown", function(e) {
 		if(Asteroids.State.touching !== false) return;
 
-		e.preventDefault();
 		e.stopPropagation();
 
 		Asteroids.State.dragging = true;
@@ -184,7 +183,6 @@ Asteroids.init = function(context, path) {
 	Asteroids.Context.canvas.addEventListener("mousemove", function(e) {
 		if(Asteroids.State.touching !== false) return;
 
-		e.preventDefault();
 		e.stopPropagation();
 
 		if(Asteroids.State.dragging) {
@@ -196,7 +194,6 @@ Asteroids.init = function(context, path) {
 	Asteroids.Context.canvas.addEventListener("mouseup", function(e) {
 		if(Asteroids.State.touching !== false) return;
 
-		e.preventDefault();
 		e.stopPropagation();
 
 		Asteroids.State.dragging = false;
@@ -210,7 +207,6 @@ Asteroids.init = function(context, path) {
 	Asteroids.Context.canvas.addEventListener("touchstart", function(e) {
 		if(Asteroids.State.dragging) return;
 
-		e.preventDefault();
 		e.stopPropagation();
 
 		Asteroids.State.touching = e.changedTouches[0].identifier;
@@ -222,7 +218,6 @@ Asteroids.init = function(context, path) {
 	Asteroids.Context.canvas.addEventListener("touchmove", function(e) {
 		if(Asteroids.State.dragging) return;
 
-		e.preventDefault();
 		e.stopPropagation();
 
 		for (var touch of e.changedTouches) {
@@ -238,7 +233,6 @@ Asteroids.init = function(context, path) {
 	Asteroids.Context.canvas.addEventListener("touchend", function(e) {
 		if(Asteroids.State.dragging) return;
 
-		e.preventDefault();
 		e.stopPropagation();
 
 		for (var touch of e.changedTouches) {

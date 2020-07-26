@@ -1,6 +1,6 @@
 var FlappyCopter = {
 	Info: {
-		name: "Flappy Copter",
+		name: "FlappyCopter",
 		path: "flappycopter",
 		description: "Classic FlappyCopter!"
 	},

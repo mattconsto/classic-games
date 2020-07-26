@@ -45,7 +45,6 @@ Pong.init = function(context, path) {
 	resizefunc();
 
 	let touchfunc = function(e) {
-		e.preventDefault();
 		e.stopPropagation();
 
 		for (var touch of e.changedTouches) {
@@ -65,7 +64,6 @@ Pong.init = function(context, path) {
 	Pong.Context.canvas.addEventListener("touchstart", touchfunc);
 	Pong.Context.canvas.addEventListener("touchmove", touchfunc);
 	Pong.Context.canvas.addEventListener("touchend", function(e) {
-		e.preventDefault();
 		e.stopPropagation();
 
 		for (var touch of e.changedTouches) {

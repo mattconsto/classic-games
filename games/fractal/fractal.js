@@ -157,7 +157,6 @@ Fractal.init = function(context) {
 	window.addEventListener("mousedown", function(e) {
 		if (e.target.nodeName.toLowerCase() != 'canvas') return;
 
-		e.preventDefault();
 		e.stopPropagation();
 
 		if(!Fractal.State.juliaEnabled) {
@@ -169,26 +168,24 @@ Fractal.init = function(context) {
 	window.addEventListener("mousemove", function(e) {
 		if (e.target.nodeName.toLowerCase() != 'canvas') return;
 
-		e.preventDefault();
 		e.stopPropagation();
 
 		if(!Fractal.State.juliaEnabled && Fractal.State.startX && Fractal.State.startY) {
 			var changeX = (e.clientX - Fractal.State.startX);
 			var changeY = (e.clientY - Fractal.State.startY);
-			Fractal.Context.canvas.style.left = changeX + "px";
-			Fractal.Context.canvas.style.top = changeY + "px";
+			Fractal.Context.canvas.style.left = "calc(50% + " + changeX + "px)";
+			Fractal.Context.canvas.style.top = "calc(50% + " + changeY + "px)";
 		}
 	});
 
 	window.addEventListener("mouseup", function(e) {
 		if ((Fractal.State.startX == undefined || Fractal.State.startY == undefined) && !Fractal.State.juliaEnabled) return;
 
-		e.preventDefault();
 		e.stopPropagation();
 
 		if (e.target.nodeName.toLowerCase() != 'canvas') {
-			Fractal.Context.canvas.style.left = 0;
-			Fractal.Context.canvas.style.top = 0;
+			Fractal.Context.canvas.style.left = '50%';
+			Fractal.Context.canvas.style.top = '50%';
 			delete Fractal.State.startX;
 			delete Fractal.State.startY;
 			return;
@@ -213,14 +210,16 @@ Fractal.init = function(context) {
 			Fractal.State.juliaEnabled = false;
 			Fractal.Context.canvas.style.cursor = 'move';
 		}
-		Fractal.Context.canvas.style.left = 0;
-		Fractal.Context.canvas.style.top = 0;
+		Fractal.Context.canvas.style.left = '50%';
+		Fractal.Context.canvas.style.top = '50%';
 		delete Fractal.State.startX;
 		delete Fractal.State.startY;
 		window.dispatchEvent(new Event('resize'));
 	});
 
 	window.addEventListener("touchstart", function(e) {
+		e.stopPropagation();
+
 		Fractal.State.touching = e.changedTouches[0].identifier;
 		var event = new MouseEvent("mousedown", e.changedTouches[0]);
 		Object.defineProperty(event, 'target', {writable: false, value: Fractal.Context.canvas});
@@ -228,6 +227,8 @@ Fractal.init = function(context) {
 	});
 
 	window.addEventListener("touchmove", function(e) {
+		e.stopPropagation();
+
 		for (var touch of e.changedTouches) {
 			if(Fractal.State.touching == touch.identifier) {
 				var event = new MouseEvent("mousemove", touch);
@@ -239,6 +240,8 @@ Fractal.init = function(context) {
 	});
 
 	window.addEventListener("touchend", function(e) {
+		e.stopPropagation();
+
 		for (var touch of e.changedTouches) {
 			if(Fractal.State.touching == touch.identifier) {
 				var event = new MouseEvent("mouseup", touch);

@@ -18,25 +18,29 @@ var Loader = {
 	list: function() {
 		if(Loader.State.dirty) {location.reload(); return;}
 
+		document.getElementsByTagName("body")[0].style.overflow = "auto";
+
 		document.getElementById("back-github").style.display = "block";
 		document.getElementById("back-home").style.display = "none";
 		let html = "";
 
 		for(let game in Loader.State.list) {
-			html += '	<div class="col m3">\
+			html += '	<div class="col s6 m4 l3">\
 		<div class="card">\
 			<div class="card-image">\
-				<a href="#!/play/{path}"><img src="games/{path}/screenshot.png" alt="{name}" title="{description}" /></a>\
+				<a href="#!/{path}"><img src="games/{path}/screenshot.png" alt="{name}" title="{description}" /></a>\
 			</div>\
-			<div class="card-action"><a href="#!/play/{path}">{name}</a></div>\
+			<div class="card-action"><a href="#!/{path}">{name}</a></div>\
 		</div>\
 	</div>'.formatApply(Loader.State.list[game].Info);
 		}
 
-		Loader.State.context.innerHTML = '<div class="container"><div class="row">{0}</div><div style="color: #efefef;">Created by <a href="https://consto.uk">Matthew Consterdine</a></div></div>'.format(html);
+		Loader.State.context.innerHTML = '<div class="container" style="height: 100%"><div class="row">{0}</div><div style="color: #efefef;">Created by <a href="https://consto.uk">Matthew Consterdine</a></div></div>'.format(html);
 	},
 	play: function(game) {
 		if(Loader.State.dirty) {location.reload(); return;}
+
+		document.getElementsByTagName("body")[0].style.overflow = "hidden";
 
 		if(typeof Loader.State.list[game] !== "undefined") {
 			document.getElementById("back-github").style.display = "none";
@@ -56,10 +60,11 @@ var Loader = {
 window.onhashchange = function() {
 	let query = location.hash.replace(/^#!?\/?/, "").split("/");
 	
-	if(query.length == 0 || query[0] == "list" || query[0] == "index") {
+	console.log(query);
+	if(query.length == 0 || query[0].length == 0) {
 		Loader.list();
-	} else if(query.length >= 2 && query[0] == "play") {
-		Loader.play(query[1]);
+	} else {
+		Loader.play(query[0]);
 	}
 }
 
