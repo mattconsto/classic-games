@@ -61,14 +61,20 @@ FlappyCopter.init = function(context, path) {
 	window.addEventListener("resize", resizefunc);
 	resizefunc();
 
+	FlappyCopter.Context.canvas.addEventListener("mousedown", FlappyCopter.Jump);
+	FlappyCopter.Context.canvas.addEventListener("touchstart", FlappyCopter.Jump);
+
 	FlappyCopter.loop();
 }
 
 FlappyCopter.events = function(state, context, res) {
-	if(Keyboard.has(32) && state.timer > 500) {
-		state.state = "flying";
-		state.ship.dy = Math.min(1, state.ship.dy + Timing.delta/10);
-	}
+	if(Keyboard.delete(32)) FlappyCopter.Jump();
+}
+
+FlappyCopter.Jump = function() {
+	console.log('jump');
+	FlappyCopter.State.state = "flying";
+	FlappyCopter.State.ship.dy = Math.min(1, FlappyCopter.State.ship.dy + 10000);
 }
 
 /* Game update logic */
@@ -76,7 +82,7 @@ FlappyCopter.logic = function(state, context, res) {
 	if(state.state != "waiting" && state.timer > 500) {
 		state.ship.x += state.ship.dx*Timing.delta/1000;
 		state.ship.y = state.ship.y + state.ship.dy*Timing.delta/1000;
-		state.ship.dy = Math.max(-1, state.ship.dy - Timing.delta/100);
+		state.ship.dy = state.ship.dy - Timing.delta/400;
 		state.ship.sprite = (state.ship.sprite + Timing.delta/48) % res.planes.blue.length;
 	}
 
