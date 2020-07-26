@@ -346,7 +346,7 @@ Fractal.events = function(state, context, res) {
 
 /* Game update logic */
 Fractal.logic = function(state, context, res) {
-	if(!state.generated || state.scale > state.min) {
+	if(!state.generated || state.scale >= state.min) {
 		context.canvas.width  = context.canvas.parentElement.clientWidth / state.scale;
 		context.canvas.height = context.canvas.parentElement.clientHeight / state.scale;
 
