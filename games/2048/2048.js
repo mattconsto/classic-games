@@ -6,9 +6,11 @@ var TwoZeroFourEight = {
 	},
 	Context: {},
 	State: {
-		size: {scale: 1, width: 4, height: 4, total: 4 * 4},
+		dragging: false,
 		map: new Array(4 * 4).fill(0),
-		timeout: 200
+		size: {scale: 1, width: 4, height: 4, total: 4 * 4},
+		timeout: 200,
+		touching: false,
 	},
 	Resources: {},
 	Entities: {}
@@ -57,14 +59,14 @@ TwoZeroFourEight.init = function(context) {
 	resizefunc();
 
 	TwoZeroFourEight.Context.canvas.addEventListener("mousedown", function(e) {
-		if(TwoZeroFourEight.State.touching) return;
+		if(TwoZeroFourEight.State.touching !== false) return;
 		TwoZeroFourEight.State.dragging = true;
 		TwoZeroFourEight.State.startX = e.x;
 		TwoZeroFourEight.State.startY = e.y;
 	});
 
 	TwoZeroFourEight.Context.canvas.addEventListener("mouseup", function(e) {
-		if(TwoZeroFourEight.State.touching) return;
+		if(TwoZeroFourEight.State.touching !== false) return;
 		TwoZeroFourEight.State.dragging = false;
 		TwoZeroFourEight.HandleGestures(
 			e.x - TwoZeroFourEight.State.startX,
@@ -111,13 +113,13 @@ TwoZeroFourEight.HandleGestures = function(dx, dy) {
 	if(biggest <= 10) return;
 
 	if(dx == biggest) { // right
-		document.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':39}));
+		Keyboard.add(39);
 	} else if(-dx == biggest) { // left
-		document.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':37}));
+		Keyboard.add(37);
 	} else if(dy == biggest) { // down
-		document.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':40}));
+		Keyboard.add(40);
 	} else if(-dy == biggest) { // up
-		document.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':38}));
+		Keyboard.add(38);
 	}
 }
 

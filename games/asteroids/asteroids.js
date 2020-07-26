@@ -114,15 +114,17 @@ Asteroids.Entities.Ship = function(x, y) {
 /* Initialization */
 Asteroids.init = function(context, path) {
 	Asteroids.State = {
-		size: {scale: 16, width: 512, height: 512, total: 512 * 512},
-		score: 0,
-		lives: 3,
-		ship: {},
 		asteroids: [],
+		asteroids_count: 7,
 		bullets: [],
 		debris: [],
-		asteroids_count: 7,
-		running: true
+		dragging: false,
+		lives: 3,
+		running: true,
+		score: 0,
+		ship: {},
+		size: {scale: 16, width: 512, height: 512, total: 512 * 512},
+		touching: false,
 	};
 
 	Asteroids.Resources = Resources.load(Asteroids.Resources, path ? path : 'games/asteroids/');
@@ -143,8 +145,121 @@ Asteroids.init = function(context, path) {
 	window.addEventListener("resize", resizefunc);
 	resizefunc();
 
+	Asteroids.State.movementTimer = setInterval(function() {
+		if(Asteroids.State.dragging || Asteroids.State.touching !== false) {
+			Keyboard.add(32);
+			if(Asteroids.State.moveX == -1) {
+				Keyboard.delete(39);
+				Keyboard.add(37);
+			} else if(Asteroids.State.moveX == 0) {
+				if(Asteroids.State.moveY >= 0) {
+					Keyboard.delete(37);
+					Keyboard.delete(38);
+					Keyboard.delete(40);
+					Keyboard.add(38);
+				} else {
+					Keyboard.delete(37);
+					Keyboard.delete(38);
+					Keyboard.delete(39);
+					Keyboard.add(40);
+				}
+			} else if (Asteroids.State.moveX == 1) {
+				Keyboard.delete(37);
+				Keyboard.add(39);
+			}
+		}
+	}, 250);
+
+	Asteroids.Context.canvas.addEventListener("mousedown", function(e) {
+		if(Asteroids.State.touching !== false) return;
+
+		e.preventDefault();
+		e.stopPropagation();
+
+		Asteroids.State.dragging = true;
+		Asteroids.State.moveX = Math.sign(Math.round(4 * e.offsetX / e.target.clientWidth) - 2);
+		Asteroids.State.moveY = Math.sign(Math.round(4 * e.offsetY / e.target.clientHeight) - 2);
+	});
+
+	Asteroids.Context.canvas.addEventListener("mousemove", function(e) {
+		if(Asteroids.State.touching !== false) return;
+
+		e.preventDefault();
+		e.stopPropagation();
+
+		if(Asteroids.State.dragging) {
+			Asteroids.State.moveX = Math.sign(Math.round(4 * e.offsetX / e.target.clientWidth) - 2);
+			Asteroids.State.moveY = Math.sign(Math.round(4 * e.offsetY / e.target.clientHeight) - 2);
+		}
+	});
+
+	Asteroids.Context.canvas.addEventListener("mouseup", function(e) {
+		if(Asteroids.State.touching !== false) return;
+
+		e.preventDefault();
+		e.stopPropagation();
+
+		Asteroids.State.dragging = false;
+		Keyboard.delete(32);
+		Keyboard.delete(37);
+		Keyboard.delete(38);
+		Keyboard.delete(39);
+		Keyboard.delete(40);
+	});
+
+	Asteroids.Context.canvas.addEventListener("touchstart", function(e) {
+		if(Asteroids.State.dragging) return;
+
+		e.preventDefault();
+		e.stopPropagation();
+
+		Asteroids.State.touching = e.changedTouches[0].identifier;
+		var rect = e.changedTouches[0].target.getBoundingClientRect();
+		Asteroids.State.moveX = Math.sign(Math.round(6 * (e.changedTouches[0].clientX - rect.left) / e.target.clientWidth) - 3);
+		Asteroids.State.moveY = Math.sign(Math.round(6 * (e.changedTouches[0].clientY - rect.top) / e.target.clientHeight) - 3);
+	});
+
+	Asteroids.Context.canvas.addEventListener("touchmove", function(e) {
+		if(Asteroids.State.dragging) return;
+
+		e.preventDefault();
+		e.stopPropagation();
+
+		for (var touch of e.changedTouches) {
+			if(Asteroids.State.touching == touch.identifier) {
+				var rect = touch.target.getBoundingClientRect();
+				Asteroids.State.moveX = Math.sign(Math.round(6 * (touch.clientX - rect.left) / e.target.clientWidth) - 3);
+				Asteroids.State.moveY = Math.sign(Math.round(6 * (touch.clientY - rect.top) / e.target.clientHeight) - 3);
+				break;
+			}
+		}
+	});
+
+	Asteroids.Context.canvas.addEventListener("touchend", function(e) {
+		if(Asteroids.State.dragging) return;
+
+		e.preventDefault();
+		e.stopPropagation();
+
+		for (var touch of e.changedTouches) {
+			if(Asteroids.State.touching == touch.identifier) {
+				Asteroids.State.touching = false;
+				Keyboard.delete(32);
+				Keyboard.delete(37);
+				Keyboard.delete(38);
+				Keyboard.delete(39);
+				Keyboard.delete(40);
+				break;
+			}
+		}
+	});
+
 	/* Generate asteroids */
-	for(let i = 0; i < Asteroids.State.asteroids_count; i++) Asteroids.State.asteroids.push(new Asteroids.Entities.Asteroid(Math.random(), Math.random()));
+	for(let i = 0; i < Asteroids.State.asteroids_count; i++) {
+		Asteroids.State.asteroids.push(
+			new Asteroids.Entities.Asteroid(Math.random(), Math.random())
+		);
+	}
 
 	Asteroids.State.ship = new Asteroids.Entities.Ship(0.5, 0.5);
 
@@ -152,13 +267,43 @@ Asteroids.init = function(context, path) {
 }
 
 Asteroids.events = function(state, context, res) {
-	if(Keyboard.has(87) && !Keyboard.has(83)) {state.ship.v = Math.max(-state.ship.max/2, Math.min(state.ship.max, state.ship.v + Timing.delta*0.000005));} // KeyW
-	if(Keyboard.has(83) && !Keyboard.has(87)) {state.ship.v = Math.max(-state.ship.max/2, Math.min(state.ship.max, state.ship.v - Timing.delta*0.000005));} // KeyS
+	if( // KeyW
+		(Keyboard.has(87) && !Keyboard.has(83)) ||
+		(Keyboard.has(38) && !Keyboard.has(40))
+	) {
+		state.ship.v = Math.max(
+			-state.ship.max/2,
+			Math.min(state.ship.max, state.ship.v + Timing.delta*0.000005)
+		);
+	}
 
-	if(Keyboard.has(65) && !Keyboard.has(68)) {state.ship.a -= Timing.delta*0.01;} // KeyA
-	if(Keyboard.has(68) && !Keyboard.has(65)) {state.ship.a += Timing.delta*0.01;} // KeyD
+	if( // KeyS
+		(Keyboard.has(83) && !Keyboard.has(87)) ||
+		(Keyboard.has(40) && !Keyboard.has(38))
+	) {
+		state.ship.v = Math.max(
+			-state.ship.max/2,
+			Math.min(state.ship.max, state.ship.v - Timing.delta*0.000005)
+		);
+	}
 
-	if(Keyboard.has(32) && state.ship.lastbullet >= 400) {
+	if( // KeyA
+		(Keyboard.has(65) && !Keyboard.has(68)) ||
+		(Keyboard.has(37) && !Keyboard.has(39))
+	) {
+		state.ship.a -= Timing.delta*0.01;
+	}
+
+	if( // KeyD
+		(Keyboard.has(68) && !Keyboard.has(65)) ||
+		(Keyboard.has(39) && !Keyboard.has(37))
+	) {
+		state.ship.a += Timing.delta*0.01;
+	}
+
+	if(
+		Keyboard.has(32) && state.ship.lastbullet >= 400
+	) {
 		state.ship.lastbullet = 0;
 		if (res.blip && res.blip.play) res.blip.play();
 		state.bullets.push(new Asteroids.Entities.Bullet(state.ship));

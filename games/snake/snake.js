@@ -15,13 +15,15 @@ var Snake = {
 /* Initialization */
 Snake.init = function(context, path) {
 	Snake.State = {
-		size: {scale: 1, width: 25, height: 20, total: 25 * 20},
-		pellets: [],
-		snake: [{x:10,y:9}, {x:10,y:10}],
 		direction: 0,
+		dragging: false,
 		facing: 0,
+		pellets: [],
+		running: true,
+		size: {scale: 1, width: 25, height: 20, total: 25 * 20},
+		snake: [{x:10,y:9}, {x:10,y:10}],
 		timer: 0,
-		running: true
+		touching: false,
 	};
 
 	context.innerHTML = '<canvas id="canvas">Your browser doesn\'t support HTML5 Canvas!</canvas>';
@@ -42,14 +44,14 @@ Snake.init = function(context, path) {
 	resizefunc();
 
 	Snake.Context.canvas.addEventListener("mousedown", function(e) {
-		if(Snake.State.touching) return;
+		if(Snake.State.touching !== false) return;
 		Snake.State.dragging = true;
 		Snake.State.startX = e.x;
 		Snake.State.startY = e.y;
 	});
 
 	Snake.Context.canvas.addEventListener("mouseup", function(e) {
-		if(Snake.State.touching) return;
+		if(Snake.State.touching !== false) return;
 		Snake.State.dragging = false;
 		Snake.HandleGestures(
 			e.x - Snake.State.startX,
@@ -103,13 +105,13 @@ Snake.HandleGestures = function(dx, dy) {
 	if(biggest <= 10) return;
 
 	if(dx == biggest) { // right
-		document.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':39}));
+		Keyboard.add(39);
 	} else if(-dx == biggest) { // left
-		document.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':37}));
+		Keyboard.add(37);
 	} else if(dy == biggest) { // down
-		document.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':40}));
+		Keyboard.add(40);
 	} else if(-dy == biggest) { // up
-		document.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':38}));
+		Keyboard.add(38);
 	}
 }
 
