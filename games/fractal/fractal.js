@@ -91,6 +91,7 @@ Fractal.init = function(context) {
 		min: 4,
 		colourMap: [],
 		image: [],
+		touching: false,
 
 		start: -2.5, // Range of the complex plane
 		stop: 1.5,
@@ -156,18 +157,24 @@ Fractal.init = function(context) {
 	window.addEventListener("mousedown", function(e) {
 		if (e.target.nodeName.toLowerCase() != 'canvas') return;
 
+		e.preventDefault();
+		e.stopPropagation();
+
 		if(!Fractal.State.juliaEnabled) {
-			Fractal.State.startX = e.x;
-			Fractal.State.startY = e.y;
+			Fractal.State.startX = e.clientX;
+			Fractal.State.startY = e.clientY;
 		}
 	});
 
 	window.addEventListener("mousemove", function(e) {
 		if (e.target.nodeName.toLowerCase() != 'canvas') return;
 
+		e.preventDefault();
+		e.stopPropagation();
+
 		if(!Fractal.State.juliaEnabled && Fractal.State.startX && Fractal.State.startY) {
-			var changeX = (e.x - Fractal.State.startX);
-			var changeY = (e.y - Fractal.State.startY);
+			var changeX = (e.clientX - Fractal.State.startX);
+			var changeY = (e.clientY - Fractal.State.startY);
 			Fractal.Context.canvas.style.left = changeX + "px";
 			Fractal.Context.canvas.style.top = changeY + "px";
 		}
@@ -175,6 +182,9 @@ Fractal.init = function(context) {
 
 	window.addEventListener("mouseup", function(e) {
 		if ((Fractal.State.startX == undefined || Fractal.State.startY == undefined) && !Fractal.State.juliaEnabled) return;
+
+		e.preventDefault();
+		e.stopPropagation();
 
 		if (e.target.nodeName.toLowerCase() != 'canvas') {
 			Fractal.Context.canvas.style.left = 0;
@@ -185,8 +195,8 @@ Fractal.init = function(context) {
 		}
 
 		if(!Fractal.State.juliaEnabled) {
-			var changeX = (e.x - Fractal.State.startX) / e.target.clientWidth;
-			var changeY = (e.y - Fractal.State.startY) / e.target.clientHeight;
+			var changeX = (e.clientX - Fractal.State.startX) / e.target.clientWidth;
+			var changeY = (e.clientY - Fractal.State.startY) / e.target.clientHeight;
 			var deltaX = (Fractal.State.stop - Fractal.State.start) * changeX;
 			var deltaY = (Fractal.State.bottom - Fractal.State.top) * changeY;
 			Fractal.State.start -= deltaX;
@@ -194,8 +204,8 @@ Fractal.init = function(context) {
 			Fractal.State.top -= deltaY;
 			Fractal.State.bottom -= deltaY;
 		} else {
-			var positionX = e.x / e.target.clientWidth;
-			var positionY = e.y / e.target.clientHeight;
+			var positionX = e.clientX / e.target.clientWidth;
+			var positionY = e.clientY / e.target.clientHeight;
 			var placeX = Fractal.State.start + (Fractal.State.stop - Fractal.State.start) * positionX;
 			var placeY = Fractal.State.top + (Fractal.State.bottom - Fractal.State.top) * positionY;
 			Fractal.State.seedr = placeX;
@@ -203,11 +213,41 @@ Fractal.init = function(context) {
 			Fractal.State.juliaEnabled = false;
 			Fractal.Context.canvas.style.cursor = 'move';
 		}
-			Fractal.Context.canvas.style.left = 0;
-			Fractal.Context.canvas.style.top = 0;
+		Fractal.Context.canvas.style.left = 0;
+		Fractal.Context.canvas.style.top = 0;
 		delete Fractal.State.startX;
 		delete Fractal.State.startY;
 		window.dispatchEvent(new Event('resize'));
+	});
+
+	window.addEventListener("touchstart", function(e) {
+		Fractal.State.touching = e.changedTouches[0].identifier;
+		var event = new MouseEvent("mousedown", e.changedTouches[0]);
+		Object.defineProperty(event, 'target', {writable: false, value: Fractal.Context.canvas});
+		window.dispatchEvent(event);
+	});
+
+	window.addEventListener("touchmove", function(e) {
+		for (var touch of e.changedTouches) {
+			if(Fractal.State.touching == touch.identifier) {
+				var event = new MouseEvent("mousemove", touch);
+				Object.defineProperty(event, 'target', {writable: false, value: Fractal.Context.canvas});
+				window.dispatchEvent(event);
+				break;
+			}
+		}
+	});
+
+	window.addEventListener("touchend", function(e) {
+		for (var touch of e.changedTouches) {
+			if(Fractal.State.touching == touch.identifier) {
+				var event = new MouseEvent("mouseup", touch);
+				Object.defineProperty(event, 'target', {writable: false, value: Fractal.Context.canvas});
+				window.dispatchEvent(event);
+				Fractal.State.touching = false;
+				break;
+			}
+		}
 	});
 
 	// Precaculate for speed.
