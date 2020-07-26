@@ -360,8 +360,10 @@ Fractal.events = function(state, context, res) {
 		window.dispatchEvent(new Event('resize'));
 	}
 	if(Keyboard.delete(80)) { // p
-		state.scale = 1;
-		state.generated = false;
+		if(state.scale >= 1) {
+			state.scale = 1;
+			state.generated = false;
+		}
 	}
 	if(Keyboard.delete(82)) { // r
 		state.region = (state.region + 1) % 3;
