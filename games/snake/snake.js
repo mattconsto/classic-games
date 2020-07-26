@@ -41,6 +41,44 @@ Snake.init = function(context, path) {
 	window.addEventListener("resize", resizefunc);
 	resizefunc();
 
+	Snake.Context.canvas.addEventListener("mousedown", function(e) {
+		if(Snake.State.touching) return;
+		Snake.State.dragging = true;
+		Snake.State.startX = e.x;
+		Snake.State.startY = e.y;
+	});
+
+	Snake.Context.canvas.addEventListener("mouseup", function(e) {
+		if(Snake.State.touching) return;
+		Snake.State.dragging = false;
+		Snake.HandleGestures(
+			e.x - Snake.State.startX,
+			e.y - Snake.State.startY
+		);
+	});
+
+	Snake.Context.canvas.addEventListener("touchstart", function(e) {
+		if(Snake.State.dragging) return;
+		Snake.State.touching = e.changedTouches[0].identifier;
+		Snake.State.startX = e.changedTouches[0].clientX;
+		Snake.State.startY = e.changedTouches[0].clientY;
+	});
+
+	Snake.Context.canvas.addEventListener("touchend", function(e) {
+		if(Snake.State.dragging) return;
+
+		for (var touch of e.changedTouches) {
+			if(Snake.State.touching == touch.identifier) {
+				Snake.State.touching = false;
+				Snake.HandleGestures(
+					e.changedTouches[0].clientX - Snake.State.startX,
+					e.changedTouches[0].clientY - Snake.State.startY
+				);
+				break;
+			}
+		}
+	});
+
 	let position = {x:-1, y:-1};
 	for(let t = 0; t < 100; t++) {
 		position = {x:Math.floor(Math.randomRange(0, Snake.State.size.width)), y:Math.floor(Math.randomRange(0, Snake.State.size.height))};
@@ -60,12 +98,27 @@ Snake.init = function(context, path) {
 	Snake.loop();
 }
 
+Snake.HandleGestures = function(dx, dy) {
+	var biggest = Math.max(dx, -dx, dy, -dy);
+	if(biggest <= 25) return;
+
+	if(dx == biggest) { // right
+		document.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':39}));
+	} else if(-dx == biggest) { // left
+		document.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':37}));
+	} else if(dy == biggest) { // down
+		document.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':40}));
+	} else if(-dy == biggest) { // up
+		document.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':38}));
+	}
+}
+
 Snake.events = function(state, context, res) {
 	if(Keyboard.size == 1) {
-		if((Keyboard.has(87) || Keyboard.has(73) || Keyboard.has(38)) && state.direction != 2) state.direction = 0; // KeyW
-		if((Keyboard.has(68) || Keyboard.has(76) || Keyboard.has(39)) && state.direction != 3) state.direction = 1; // KeyD
-		if((Keyboard.has(83) || Keyboard.has(75) || Keyboard.has(40)) && state.direction != 0) state.direction = 2; // KeyS
-		if((Keyboard.has(65) || Keyboard.has(74) || Keyboard.has(37)) && state.direction != 1) state.direction = 3; // KeyA
+		if((Keyboard.delete(87) || Keyboard.delete(73) || Keyboard.delete(38)) && state.direction != 2) state.direction = 0; // KeyW
+		if((Keyboard.delete(68) || Keyboard.delete(76) || Keyboard.delete(39)) && state.direction != 3) state.direction = 1; // KeyD
+		if((Keyboard.delete(83) || Keyboard.delete(75) || Keyboard.delete(40)) && state.direction != 0) state.direction = 2; // KeyS
+		if((Keyboard.delete(65) || Keyboard.delete(74) || Keyboard.delete(37)) && state.direction != 1) state.direction = 3; // KeyA
 	}
 }
 
