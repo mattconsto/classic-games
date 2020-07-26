@@ -153,21 +153,32 @@ Fractal.init = function(context) {
 		window.dispatchEvent(new Event('resize'));
 	});
 
-	var startX, startY;
 	Fractal.Context.canvas.addEventListener("mousedown", function(e) {
-		startX = e.x;
-		startY = e.y;
+		if(!Fractal.State.juliaEnabled) {
+			Fractal.State.startX = e.x;
+			Fractal.State.startY = e.y;
+		}
 	});
 
 	Fractal.Context.canvas.addEventListener("mouseup", function(e) {
-		var changeX = (e.x - startX) / e.target.clientWidth;
-		var changeY = (e.y - startY) / e.target.clientHeight;
-		var deltaX = (Fractal.State.stop - Fractal.State.start) * changeX;
-		var deltaY = (Fractal.State.bottom - Fractal.State.top) * changeY;
-		Fractal.State.start -= deltaX;
-		Fractal.State.stop -= deltaX;
-		Fractal.State.top -= deltaY;
-		Fractal.State.bottom -= deltaY;
+		if(!Fractal.State.juliaEnabled) {
+			var changeX = (e.x - Fractal.State.startX) / e.target.clientWidth;
+			var changeY = (e.y - Fractal.State.startY) / e.target.clientHeight;
+			var deltaX = (Fractal.State.stop - Fractal.State.start) * changeX;
+			var deltaY = (Fractal.State.bottom - Fractal.State.top) * changeY;
+			Fractal.State.start -= deltaX;
+			Fractal.State.stop -= deltaX;
+			Fractal.State.top -= deltaY;
+			Fractal.State.bottom -= deltaY;
+		} else {
+			var positionX = e.x / e.target.clientWidth;
+			var positionY = e.y / e.target.clientHeight;
+			var placeX = Fractal.State.start + (Fractal.State.stop - Fractal.State.start) * positionX;
+			var placeY = Fractal.State.top + (Fractal.State.bottom - Fractal.State.top) * positionY;
+			Fractal.State.seedr = placeX;
+			Fractal.State.seedi = placeY;
+			Fractal.State.juliaEnabled = false;
+		}
 		window.dispatchEvent(new Event('resize'));
 	});
 
@@ -320,6 +331,23 @@ Fractal.events = function(state, context, res) {
 	if(Keyboard.delete(73)) { // i
 		state.inverse = !state.inverse;
 		window.dispatchEvent(new Event('resize'));
+	}
+	if(Keyboard.delete(74)) { // j
+		var homeButton = document.getElementById("home-button");
+		var juliaButton = document.getElementById("julia-button");
+		if(juliaButton.style.display == 'none') {
+			homeButton.style.display = 'none';
+			juliaButton.style.display = '';
+			state.juliaEnabled = false;
+			state.seedr = Infinity;
+			state.seedi = Infinity;
+			window.dispatchEvent(new Event('resize'));
+		} else {
+			alert("Click on the fractal to view the Julia Set");
+			homeButton.style.display = '';
+			juliaButton.style.display = 'none';
+			state.juliaEnabled = true;
+		}
 	}
 	if(Keyboard.delete(79)) { // o
 		state.orbit = (state.orbit + 1) % 3;
