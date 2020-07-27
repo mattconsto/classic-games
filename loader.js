@@ -59,8 +59,6 @@ var Loader = {
 
 window.onhashchange = function() {
 	let query = location.hash.replace(/^#!?\/?/, "").split("/");
-	
-	console.log(query);
 	if(query.length == 0 || query[0].length == 0) {
 		Loader.list();
 	} else {

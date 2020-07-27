@@ -7,7 +7,7 @@ var Minesweeper = {
 	Context: {},
 	State: {
 		map: [],
-		bombs: 20,
+		bombs: 16,
 		time: 0,
 		state: "pause",
 		running: true,
@@ -18,12 +18,13 @@ var Minesweeper = {
 };
 
 /* Initialization */
-Minesweeper.init = function(context) {
+Minesweeper.init = function(context, userWidth, userHeight, userBombs) {
 	context.innerHTML = '<div id="canvas-minesweeper">\
 		<div>\
 			<div>\
 				<span id="minesweeper-bombs">000</span>\
 				<button id="minesweeper-face">😊</button>\
+				<button id="minesweeper-cog">⚙️</button>\
 				<span id="minesweeper-time">000</span>\
 			</div>\
 			<table></table>\
@@ -31,25 +32,31 @@ Minesweeper.init = function(context) {
 	</div>';
 	Minesweeper.Context = document.getElementById('canvas-minesweeper');
 
-	let resizefunc = function() {
-		if(Minesweeper.Context.parentElement.clientWidth*Minesweeper.State.size.height/Minesweeper.State.size.width < Minesweeper.Context.parentElement.clientHeight) {
-			Minesweeper.Context.style.width  = Minesweeper.Context.parentElement.clientWidth + "px";
-			// Minesweeper.Context.style.height = Minesweeper.Context.parentElement.clientWidth*Minesweeper.State.size.height/Minesweeper.State.size.width + "px";
-		} else {
-			Minesweeper.Context.style.width  = Minesweeper.Context.parentElement.clientHeight*Minesweeper.State.size.width/Minesweeper.State.size.height + "px";
-			// Minesweeper.Context.style.height = Minesweeper.Context.parentElement.clientHeight + "px";
-		}
-	};
-	window.addEventListener("resize", resizefunc);
-	resizefunc();
-
 	Minesweeper.State.state = "pause";
 	Minesweeper.State.time = 0;
-	Minesweeper.State.bombs = 16;
+	if (userWidth) Minesweeper.State.size.width = Math.max(1, Math.min(100, userWidth));
+	if (userHeight) Minesweeper.State.size.height = Math.max(1, Math.min(100, userHeight));
+	Minesweeper.State.size.total = Minesweeper.State.size.width * Minesweeper.State.size.height;
+	Minesweeper.State.bombs = userBombs ? Math.max(1, Math.min(Minesweeper.State.size.total, userBombs)) : 16;
+
 	document.getElementById("minesweeper-face").innerHTML = "😊";
-	document.getElementById("minesweeper-face").onclick = Minesweeper.init;
+	document.getElementById("minesweeper-face").onclick = function() {
+		Minesweeper.init(context, Minesweeper.State.size.width, Minesweeper.State.size.height, Minesweeper.State.bombs);
+	};
+	document.getElementById("minesweeper-cog").onclick = function() {
+		var config = prompt("Chose your size and difficulty", Minesweeper.State.size.width + " wide, " + Minesweeper.State.size.height + " tall, " + Minesweeper.State.bombs + " bombs");
+		if(config) {
+			var split = config.replace(/[^\d,]/g, '').replace(/,+/g, ',').split(",");
+			if(split.length < 3) {
+				alert("Invalid settings");
+			} else {
+				Minesweeper.init(context, parseInt(split[0]), parseInt(split[1]), parseInt(split[2]));
+			}
+		}
+	}
 
 	// Setup world
+	Minesweeper.State.map = [];
 	for(let i = 0; i < Minesweeper.State.size.total; i++) Minesweeper.State.map[i] = {value: 0, visible: false, flag: false};
 
 	var table = Minesweeper.Context.getElementsByTagName('table')[0];
@@ -62,7 +69,7 @@ Minesweeper.init = function(context) {
 			var button = document.createElement('input');
 			button.setAttribute('type', 'submit');
 			button.setAttribute('class', 'c'+x+' r'+y);
-			renderCell(Minesweeper.State.map[y*Minesweeper.State.size.width + x], button);
+			renderCell(Minesweeper.State.map[y * Minesweeper.State.size.width + x], button);
 
 			button.onclick       = function(e) {e.preventDefault(); handleButton(e, x, y)};
 			button.ondblclick    = function(e) {e.preventDefault(); handleDouble(e, x, y)};
@@ -249,9 +256,7 @@ let renderCell = function(cell, target) {
 	}
 }
 
-Minesweeper.events = function(state, context, res) {
-
-}
+Minesweeper.events = function(state, context, res) {}
 
 /* Game update logic */
 Minesweeper.logic = function(state, context, res) {
