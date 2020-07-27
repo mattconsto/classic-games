@@ -68,7 +68,7 @@ FlappyCopter.init = function(context, path) {
 }
 
 FlappyCopter.events = function(state, context, res) {
-	if(Keyboard.delete(32)) FlappyCopter.Jump();
+	if(Keyboard.delete(32) || Keyboard.delete(38) || Keyboard.delete(87)) FlappyCopter.Jump();
 }
 
 FlappyCopter.Jump = function() {
