@@ -138,7 +138,6 @@ Fractal.init = function(context) {
 	window.addEventListener("wheel", function(e) {
 		var positionX = e.x / e.target.clientWidth;
 		var positionY = e.y / e.target.clientHeight;
-		// This needs to be double the value of the keyboard zoom
 		var deltaX = (Fractal.State.stop - Fractal.State.start) / 5;
 		var deltaY = (Fractal.State.bottom - Fractal.State.top) / 5;
 		if (e.deltaY > 0) {
@@ -381,8 +380,8 @@ Fractal.events = function(state, context, res) {
 		window.dispatchEvent(new Event('resize'));
 	}
 	if(Keyboard.delete(61)) { // equals/plus
-		var deltaX = (state.stop - state.start) / 10;
-		var deltaY = (state.bottom - state.top) / 10;
+		var deltaX = (state.stop - state.start) / 5;
+		var deltaY = (state.bottom - state.top) / 5;
 		state.start += deltaX;
 		state.stop -= deltaX;
 		state.top += deltaY;
@@ -441,8 +440,8 @@ Fractal.events = function(state, context, res) {
 		window.dispatchEvent(new Event('resize'));
 	}
 	if(Keyboard.delete(173)) { // minus/underscore
-		var deltaX = (state.stop - state.start) / 10;
-		var deltaY = (state.bottom - state.top) / 10;
+		var deltaX = (state.stop - state.start) / 5;
+		var deltaY = (state.bottom - state.top) / 5;
 		state.start -= deltaX;
 		state.stop += deltaX;
 		state.top -= deltaY;
