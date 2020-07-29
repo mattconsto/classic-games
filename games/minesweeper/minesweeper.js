@@ -70,10 +70,12 @@ Minesweeper.init = function(context, userWidth, userHeight, userBombs) {
 			button.setAttribute('type', 'submit');
 			button.setAttribute('class', 'c'+x+' r'+y);
 			renderCell(Minesweeper.State.map[y * Minesweeper.State.size.width + x], button);
+			button.dataset.x = x;
+			button.dataset.y = y;
 
-			button.onclick       = function(e) {e.preventDefault(); handleButton(e, x, y)};
-			button.ondblclick    = function(e) {e.preventDefault(); handleDouble(e, x, y)};
-			button.oncontextmenu = function(e) {e.preventDefault(); handleFlag(e, x, y)};
+			button.onclick       = function(e) {e.preventDefault(); handleButton(e, parseInt(e.target.dataset.x), parseInt(e.target.dataset.y))};
+			button.ondblclick    = function(e) {e.preventDefault(); handleDouble(e, parseInt(e.target.dataset.x), parseInt(e.target.dataset.y))};
+			button.oncontextmenu = function(e) {e.preventDefault(); handleFlag(e, parseInt(e.target.dataset.x), parseInt(e.target.dataset.y))};
 
 			var cell = document.createElement('td');
 			cell.appendChild(button);

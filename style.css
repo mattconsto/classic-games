@@ -113,7 +113,6 @@ html, body {
 	position: absolute;
 	padding: 5px;
 	color: transparent;
-	display: flex;
 	justify-content: center;
 	align-items: center;
 	font-size: 10vmin;
@@ -221,6 +220,8 @@ html, body {
 	flex-grow: 1;
 	table-layout: fixed;
 	width: 100%;
+	min-width: 300px;
+	min-height: 300px;
 	display: flex;
 	flex-direction: column;
 	border-spacing: 0;

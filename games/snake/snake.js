@@ -69,12 +69,12 @@ Snake.init = function(context, path) {
 	Snake.Context.canvas.addEventListener("touchend", function(e) {
 		if(Snake.State.dragging) return;
 
-		for (var touch of e.changedTouches) {
-			if(Snake.State.touching == touch.identifier) {
+		for (var i = 0; i < e.changedTouches.length; i++) {
+			if(Snake.State.touching == e.changedTouches[i].identifier) {
 				Snake.State.touching = false;
 				Snake.HandleGestures(
-					e.changedTouches[0].clientX - Snake.State.startX,
-					e.changedTouches[0].clientY - Snake.State.startY
+					e.changedTouches[i].clientX - Snake.State.startX,
+					e.changedTouches[i].clientY - Snake.State.startY
 				);
 				break;
 			}

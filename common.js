@@ -26,7 +26,7 @@ String.prototype.format = function() {
 String.prototype.formatApply = function() {
 	var args = arguments[0];
 	return this.replace(/{([\w\d]+)}/g, function(match, number) {
-		return typeof args[number] != 'undefined' && !match.startsWith("{_") ? args[number] : match;
+		return typeof args[number] != 'undefined' && !match.match(/^{_/) ? args[number] : match;
 	});
 };
 

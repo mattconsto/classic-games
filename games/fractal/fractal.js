@@ -120,9 +120,6 @@ Fractal.init = function(context) {
 	var resizefunc = function() {
 		console.log("Resize");
 
-		Fractal.State.generated = false;
-		Fractal.State.scale = Fractal.State.max;
-
 		Fractal.Context.canvas.width  = Fractal.Context.canvas.parentElement.clientWidth / Fractal.State.scale;
 		Fractal.Context.canvas.height = Fractal.Context.canvas.parentElement.clientHeight / Fractal.State.scale;
 
@@ -131,6 +128,8 @@ Fractal.init = function(context) {
 		Fractal.Context.buffer = new ArrayBuffer(Fractal.Context.imageData.data.length);
 		Fractal.Context.buffer8 = new Uint8ClampedArray(Fractal.Context.buffer);
 		Fractal.Context.buffer32 = new Uint32Array(Fractal.Context.buffer);
+
+		Fractal.Redraw();
 	};
 	window.addEventListener("resize", resizefunc);
 	resizefunc();
@@ -151,7 +150,7 @@ Fractal.init = function(context) {
 			Fractal.State.top += deltaY * positionY;
 			Fractal.State.bottom -= deltaY * (1 - positionY);
 		}
-		window.dispatchEvent(new Event('resize'));
+		Fractal.Redraw();
 	});
 
 	window.addEventListener("mousedown", function(e) {
@@ -214,7 +213,7 @@ Fractal.init = function(context) {
 		Fractal.Context.canvas.style.top = '50%';
 		delete Fractal.State.startX;
 		delete Fractal.State.startY;
-		window.dispatchEvent(new Event('resize'));
+		Fractal.Redraw();
 	});
 
 	window.addEventListener("touchstart", function(e) {
@@ -229,9 +228,9 @@ Fractal.init = function(context) {
 	window.addEventListener("touchmove", function(e) {
 		e.stopPropagation();
 
-		for (var touch of e.changedTouches) {
-			if(Fractal.State.touching == touch.identifier) {
-				var event = new MouseEvent("mousemove", touch);
+		for (var i = 0; i < e.changedTouches.length; i++) {
+			if(Fractal.State.touching == e.changedTouches[i].identifier) {
+				var event = new MouseEvent("mousemove", e.changedTouches[i]);
 				Object.defineProperty(event, 'target', {writable: false, value: Fractal.Context.canvas});
 				window.dispatchEvent(event);
 				break;
@@ -242,9 +241,9 @@ Fractal.init = function(context) {
 	window.addEventListener("touchend", function(e) {
 		e.stopPropagation();
 
-		for (var touch of e.changedTouches) {
-			if(Fractal.State.touching == touch.identifier) {
-				var event = new MouseEvent("mouseup", touch);
+		for (var i = 0; i < e.changedTouches.length; i++) {
+			if(Fractal.State.touching == e.changedTouches[i].identifier) {
+				var event = new MouseEvent("mouseup", e.changedTouches[i]);
 				Object.defineProperty(event, 'target', {writable: false, value: Fractal.Context.canvas});
 				window.dispatchEvent(event);
 				Fractal.State.touching = false;
@@ -279,7 +278,10 @@ Fractal.generate = function(x, y) {
 
 	/* For orbit traps */
 	var distancelength = Fractal.State.region == 1 ? 5 : (Fractal.State.region == 2 ? 4 : 1);
-	var distance = new Array(distancelength).fill(Infinity);
+	var distance = [];
+	for(var i = 0; i < distancelength; i++) {
+		distance.push(Infinity);
+	}
 
 	for(var i = 1; i < Fractal.State.iterations; i++) {
 		/* Square complex1, then add complex2 */
@@ -354,30 +356,35 @@ Fractal.generate = function(x, y) {
 	return 0;
 }
 
+Fractal.Redraw = function() {
+	Fractal.State.generated = false;
+	Fractal.State.scale = Fractal.State.max;
+}
+
 Fractal.events = function(state, context, res) {
 	if(Keyboard.delete(37)) { // left
 		var delta = (state.stop - state.start) / 10;
 		state.start -= delta;
 		state.stop -= delta;
-		window.dispatchEvent(new Event('resize'));
+		Fractal.Redraw();
 	}
 	if(Keyboard.delete(38)) { // up
 		var delta = (state.bottom - state.top) / 10;
 		state.top -= delta;
 		state.bottom -= delta;
-		window.dispatchEvent(new Event('resize'));
+		Fractal.Redraw();
 	}
 	if(Keyboard.delete(39)) { // right
 		var delta = (state.stop - state.start) / 10;
 		state.start += delta;
 		state.stop += delta;
-		window.dispatchEvent(new Event('resize'));
+		Fractal.Redraw();
 	}
 	if(Keyboard.delete(40)) { // down
 		var delta = (state.bottom - state.top) / 10;
 		state.top += delta;
 		state.bottom += delta;
-		window.dispatchEvent(new Event('resize'));
+		Fractal.Redraw();
 	}
 	if(Keyboard.delete(61)) { // equals/plus
 		var deltaX = (state.stop - state.start) / 5;
@@ -386,26 +393,26 @@ Fractal.events = function(state, context, res) {
 		state.stop -= deltaX;
 		state.top += deltaY;
 		state.bottom -= deltaY;
-		window.dispatchEvent(new Event('resize'));
+		Fractal.Redraw();
 	}
 	if(Keyboard.delete(69)) { // e
 		state.order = Math.max(2, (state.order + 1) % 7);
-		window.dispatchEvent(new Event('resize'));
+		Fractal.Redraw();
 	}
 	if(Keyboard.delete(70)) { // f
 		state.selected = (state.selected + 1) % 5;
-		window.dispatchEvent(new Event('resize'));
+		Fractal.Redraw();
 	}
 	if(Keyboard.delete(72)) { // h
 		state.start = -2.5;
 		state.stop = 1.5;
 		state.top = -1.6;
 		state.bottom = 1.6;
-		window.dispatchEvent(new Event('resize'));
+		Fractal.Redraw();
 	}
 	if(Keyboard.delete(73)) { // i
 		state.inverse = !state.inverse;
-		window.dispatchEvent(new Event('resize'));
+		Fractal.Redraw();
 	}
 	if(Keyboard.delete(74)) { // j
 		var homeButton = document.getElementById("home-button");
@@ -417,7 +424,7 @@ Fractal.events = function(state, context, res) {
 			context.canvas.style.cursor = 'move';
 			state.seedr = Infinity;
 			state.seedi = Infinity;
-			window.dispatchEvent(new Event('resize'));
+		Fractal.Redraw();
 		} else {
 			homeButton.style.display = '';
 			juliaButton.style.display = 'none';
@@ -427,7 +434,7 @@ Fractal.events = function(state, context, res) {
 	}
 	if(Keyboard.delete(79)) { // o
 		state.orbit = (state.orbit + 1) % 3;
-		window.dispatchEvent(new Event('resize'));
+		Fractal.Redraw();
 	}
 	if(Keyboard.delete(80)) { // p
 		if(state.scale >= 1) {
@@ -437,7 +444,7 @@ Fractal.events = function(state, context, res) {
 	}
 	if(Keyboard.delete(82)) { // r
 		state.region = (state.region + 1) % 3;
-		window.dispatchEvent(new Event('resize'));
+		Fractal.Redraw();
 	}
 	if(Keyboard.delete(173)) { // minus/underscore
 		var deltaX = (state.stop - state.start) / 5;
@@ -446,7 +453,7 @@ Fractal.events = function(state, context, res) {
 		state.stop += deltaX;
 		state.top -= deltaY;
 		state.bottom += deltaY;
-		window.dispatchEvent(new Event('resize'));
+		Fractal.Redraw();
 	}
 }
 

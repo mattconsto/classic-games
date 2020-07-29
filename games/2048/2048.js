@@ -7,7 +7,7 @@ var TwoZeroFourEight = {
 	Context: {},
 	State: {
 		dragging: false,
-		map: new Array(4 * 4).fill(0),
+		map: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 		size: {scale: 1, width: 4, height: 4, total: 4 * 4},
 		timeout: 200,
 		touching: false,
@@ -84,12 +84,12 @@ TwoZeroFourEight.init = function(context) {
 	TwoZeroFourEight.Context.canvas.addEventListener("touchend", function(e) {
 		if(TwoZeroFourEight.State.dragging) return;
 
-		for (var touch of e.changedTouches) {
-			if(TwoZeroFourEight.State.touching == touch.identifier) {
+		for (var i = 0; i < e.changedTouches.length; i++) {
+			if(TwoZeroFourEight.State.touching == e.changedTouches[i].identifier) {
 				TwoZeroFourEight.State.touching = false;
 				TwoZeroFourEight.HandleGestures(
-					e.changedTouches[0].clientX - TwoZeroFourEight.State.startX,
-					e.changedTouches[0].clientY - TwoZeroFourEight.State.startY
+					e.changedTouches[i].clientX - TwoZeroFourEight.State.startX,
+					e.changedTouches[i].clientY - TwoZeroFourEight.State.startY
 				);
 				break;
 			}
@@ -127,138 +127,136 @@ TwoZeroFourEight.events = function(state, context, res) {
 	if(state.timeout >= 200 && Keyboard.size == 1) {
 		let moved = false;
 
-		let value = Keyboard.values().next().value;
-		Keyboard.delete(value);
+		if(Keyboard.delete(87) || Keyboard.delete(73) || Keyboard.delete(38)) { // KeyW
+			for(let y = 1; y < state.size.height; y++) {
+				for(let x = 0; x < state.size.width; x++) {
+					if(state.map[y*state.size.width+x] != 0) {
+						let j = x, k = y;
+						for(; k > 0; k--) {
+							if(state.map[(k-1)*state.size.width+j] == 0) {
+								// If blank we can continue to move.
+								continue;
+							} else if(state.map[(k-1)*state.size.width+j] == state.map[y*state.size.width+x]) {
+								// Values are the same, so we continue to push.
+								state.map[y*state.size.width+x] += state.map[(k-1)*state.size.width+j];
+								state.map[(k-1)*state.size.width+j] = 0;
 
-		switch(value) {
-			case 87: case 73: case 38: { // KeyW
-				for(let y = 1; y < state.size.height; y++) {
-					for(let x = 0; x < state.size.width; x++) {
-						if(state.map[y*state.size.width+x] != 0) {
-							let j = x, k = y;
-							for(; k > 0; k--) {
-								if(state.map[(k-1)*state.size.width+j] == 0) {
-									// If blank we can continue to move.
-									continue;
-								} else if(state.map[(k-1)*state.size.width+j] == state.map[y*state.size.width+x]) {
-									// Values are the same, so we continue to push.
-									state.map[y*state.size.width+x] += state.map[(k-1)*state.size.width+j];
-									state.map[(k-1)*state.size.width+j] = 0;
+								context.querySelector(".tile.r{0}.c{1}".format(y, x)).setAttribute("title", state.map[y*state.size.width+x]);
+								context.querySelector(".tile.r{0}.c{1}".format(k-1, j)).remove();
+							} else break;
+						}
 
-									context.querySelector(".tile.r{0}.c{1}".format(y, x)).setAttribute("title", state.map[y*state.size.width+x]);
-									context.querySelector(".tile.r{0}.c{1}".format(k-1, j)).remove();
-								} else break;
-							}
+						if(j != x || k != y) {
+							// Swap
+							state.map[k*state.size.width+j] = state.map[y*state.size.width+x];
+							state.map[y*state.size.width+x] = 0;
 
-							if(j != x || k != y) {
-								// Swap
-								state.map[k*state.size.width+j] = state.map[y*state.size.width+x];
-								state.map[y*state.size.width+x] = 0;
+							context.querySelector(".tile.r{0}.c{1}".format(y, x)).setAttribute("class", "tile r{0} c{1}".format(k, j));
 
-								context.querySelector(".tile.r{0}.c{1}".format(y, x)).setAttribute("class", "tile r{0} c{1}".format(k, j));
-
-								moved = true;
-							}
+							moved = true;
 						}
 					}
 				}
-			} break;
-			case 83: case 75: case 40: { // KeyS
-				for(let y = state.size.height - 1; y >= 0 ; y--) {
-					for(let x = 0; x < state.size.width; x++) {
-						if(state.map[y*state.size.width+x] != 0) {
-							let j = x, k = y;
-							for(; k < state.size.height - 1; k++) {
-								if(state.map[(k+1)*state.size.width+j] == 0) {
-									// If blank we can continue to move.
-									continue;
-								} else if(state.map[(k+1)*state.size.width+j] == state.map[y*state.size.width+x]) {
-									// Values are the same, so we continue to push.
-									state.map[y*state.size.width+x] += state.map[(k+1)*state.size.width+j];
-									state.map[(k+1)*state.size.width+j] = 0;
+			}
+		}
 
-									context.querySelector(".tile.r{0}.c{1}".format(y, x)).setAttribute("title", state.map[y*state.size.width+x]);
-									context.querySelector(".tile.r{0}.c{1}".format(k+1, j)).remove();
-								} else break;
-							}
+		if(Keyboard.delete(83) || Keyboard.delete(75) || Keyboard.delete(40)) { // KeyS
+			for(let y = state.size.height - 1; y >= 0 ; y--) {
+				for(let x = 0; x < state.size.width; x++) {
+					if(state.map[y*state.size.width+x] != 0) {
+						let j = x, k = y;
+						for(; k < state.size.height - 1; k++) {
+							if(state.map[(k+1)*state.size.width+j] == 0) {
+								// If blank we can continue to move.
+								continue;
+							} else if(state.map[(k+1)*state.size.width+j] == state.map[y*state.size.width+x]) {
+								// Values are the same, so we continue to push.
+								state.map[y*state.size.width+x] += state.map[(k+1)*state.size.width+j];
+								state.map[(k+1)*state.size.width+j] = 0;
 
-							if(j != x || k != y) {
-								// Swap
-								state.map[k*state.size.width+j] = state.map[y*state.size.width+x];
-								state.map[y*state.size.width+x] = 0;
+								context.querySelector(".tile.r{0}.c{1}".format(y, x)).setAttribute("title", state.map[y*state.size.width+x]);
+								context.querySelector(".tile.r{0}.c{1}".format(k+1, j)).remove();
+							} else break;
+						}
 
-								context.querySelector(".tile.r{0}.c{1}".format(y, x)).setAttribute("class", "tile r{0} c{1}".format(k, j));
+						if(j != x || k != y) {
+							// Swap
+							state.map[k*state.size.width+j] = state.map[y*state.size.width+x];
+							state.map[y*state.size.width+x] = 0;
 
-								moved = true;
-							}
+							context.querySelector(".tile.r{0}.c{1}".format(y, x)).setAttribute("class", "tile r{0} c{1}".format(k, j));
+
+							moved = true;
 						}
 					}
 				}
-			} break;
-			case 65: case 74: case 37: { // KeyA
-				for(let x = 1; x < state.size.width; x++) {
-					for(let y = 0; y < state.size.height; y++) {
-						if(state.map[y*state.size.width+x] != 0) {
-							let j = x, k = y;
-							for(; j > 0; j--) {
-								if(state.map[y*state.size.width+j-1] == 0) {
-									// If blank we can continue to move.
-									continue;
-								} else if(state.map[k*state.size.width+j-1] == state.map[y*state.size.width+x]) {
-									// Values are the same, so we continue to push.
-									state.map[y*state.size.width+x] += state.map[k*state.size.width+j-1];
-									state.map[k*state.size.width+j-1] = 0;
+			}
+		}
 
-									context.querySelector(".tile.r{0}.c{1}".format(y, x)).setAttribute("title", state.map[y*state.size.width+x]);
-									context.querySelector(".tile.r{0}.c{1}".format(k, j-1)).remove();
-								} else break;
-							}
+		if(Keyboard.delete(65) || Keyboard.delete(74) || Keyboard.delete(37)) { // KeyA
+			for(let x = 1; x < state.size.width; x++) {
+				for(let y = 0; y < state.size.height; y++) {
+					if(state.map[y*state.size.width+x] != 0) {
+						let j = x, k = y;
+						for(; j > 0; j--) {
+							if(state.map[y*state.size.width+j-1] == 0) {
+								// If blank we can continue to move.
+								continue;
+							} else if(state.map[k*state.size.width+j-1] == state.map[y*state.size.width+x]) {
+								// Values are the same, so we continue to push.
+								state.map[y*state.size.width+x] += state.map[k*state.size.width+j-1];
+								state.map[k*state.size.width+j-1] = 0;
 
-							if(j != x || k != y) {
-								// Swap
-								state.map[k*state.size.width+j] = state.map[y*state.size.width+x];
-								state.map[y*state.size.width+x] = 0;
+								context.querySelector(".tile.r{0}.c{1}".format(y, x)).setAttribute("title", state.map[y*state.size.width+x]);
+								context.querySelector(".tile.r{0}.c{1}".format(k, j-1)).remove();
+							} else break;
+						}
 
-								context.querySelector(".tile.r{0}.c{1}".format(y, x)).setAttribute("class", "tile r{0} c{1}".format(k, j));
+						if(j != x || k != y) {
+							// Swap
+							state.map[k*state.size.width+j] = state.map[y*state.size.width+x];
+							state.map[y*state.size.width+x] = 0;
 
-								moved = true;
-							}
+							context.querySelector(".tile.r{0}.c{1}".format(y, x)).setAttribute("class", "tile r{0} c{1}".format(k, j));
+
+							moved = true;
 						}
 					}
 				}
-			} break;
-			case 68: case 76: case 39: { // KeyD
-				for(let x = state.size.width - 1; x >= 0; x--) {
-					for(let y = 0; y < state.size.height; y++) {
-						if(state.map[y*state.size.width+x] != 0) {
-							let j = x, k = y;
-							for(; j < state.size.width - 1; j++) {
-								if(state.map[y*state.size.width+j+1] == 0) {
-									// If blank we can continue to move.
-									continue;
-								} else if(state.map[k*state.size.width+j+1] == state.map[y*state.size.width+x]) {
-									// Values are the same, so we continue to push.
-									state.map[y*state.size.width+x] += state.map[k*state.size.width+j+1];
-									state.map[k*state.size.width+j+1] = 0;
+			}
+		}
 
-									context.querySelector(".tile.r{0}.c{1}".format(y, x)).setAttribute("title", state.map[y*state.size.width+x]);
-									context.querySelector(".tile.r{0}.c{1}".format(k, j+1)).remove();
-								} else break;
-							}
+		if(Keyboard.delete(68) || Keyboard.delete(76) || Keyboard.delete(39)) { // KeyD
+			for(let x = state.size.width - 1; x >= 0; x--) {
+				for(let y = 0; y < state.size.height; y++) {
+					if(state.map[y*state.size.width+x] != 0) {
+						let j = x, k = y;
+						for(; j < state.size.width - 1; j++) {
+							if(state.map[y*state.size.width+j+1] == 0) {
+								// If blank we can continue to move.
+								continue;
+							} else if(state.map[k*state.size.width+j+1] == state.map[y*state.size.width+x]) {
+								// Values are the same, so we continue to push.
+								state.map[y*state.size.width+x] += state.map[k*state.size.width+j+1];
+								state.map[k*state.size.width+j+1] = 0;
 
-							if(j != x || k != y) {
-								// Swap
-								state.map[k*state.size.width+j] = state.map[y*state.size.width+x];
-								state.map[y*state.size.width+x] = 0;
+								context.querySelector(".tile.r{0}.c{1}".format(y, x)).setAttribute("title", state.map[y*state.size.width+x]);
+								context.querySelector(".tile.r{0}.c{1}".format(k, j+1)).remove();
+							} else break;
+						}
 
-								context.querySelector(".tile.r{0}.c{1}".format(y, x)).setAttribute("class", "tile r{0} c{1}".format(k, j));
+						if(j != x || k != y) {
+							// Swap
+							state.map[k*state.size.width+j] = state.map[y*state.size.width+x];
+							state.map[y*state.size.width+x] = 0;
 
-								moved = true;
-							}
+							context.querySelector(".tile.r{0}.c{1}".format(y, x)).setAttribute("class", "tile r{0} c{1}".format(k, j));
+
+							moved = true;
 						}
 					}
 				}
-			} break;
+			}
 		}
 
 		if(moved) {

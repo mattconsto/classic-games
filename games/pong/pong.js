@@ -47,10 +47,10 @@ Pong.init = function(context, path) {
 	let touchfunc = function(e) {
 		e.stopPropagation();
 
-		for (var touch of e.changedTouches) {
-			var rect = touch.target.getBoundingClientRect();
-			var x = Math.sign(Math.round((touch.clientX - rect.left) / e.target.clientWidth));
-			var y = Math.sign(Math.round((touch.clientY - rect.top) / e.target.clientHeight));
+		for (var i = 0; i < e.changedTouches.length; i++) {
+			var rect = e.changedTouches[i].target.getBoundingClientRect();
+			var x = Math.sign(Math.round((e.changedTouches[i].clientX - rect.left) / e.target.clientWidth));
+			var y = Math.sign(Math.round((e.changedTouches[i].clientY - rect.top) / e.target.clientHeight));
 			if(x == 0) {
 				Keyboard[y == 0 ? "add" : "delete"](87);
 				Keyboard[y == 1 ? "add" : "delete"](83);
@@ -66,10 +66,10 @@ Pong.init = function(context, path) {
 	Pong.Context.canvas.addEventListener("touchend", function(e) {
 		e.stopPropagation();
 
-		for (var touch of e.changedTouches) {
-			var rect = touch.target.getBoundingClientRect();
-			var x = Math.sign(Math.round((touch.clientX - rect.left) / e.target.clientWidth));
-			var y = Math.sign(Math.round((touch.clientY - rect.top) / e.target.clientHeight));
+		for (var i = 0; i < e.changedTouches.length; i++) {
+			var rect = e.changedTouches[i].target.getBoundingClientRect();
+			var x = Math.sign(Math.round((e.changedTouches[i].clientX - rect.left) / e.target.clientWidth));
+			var y = Math.sign(Math.round((e.changedTouches[i].clientY - rect.top) / e.target.clientHeight));
 			if(x == 0) {
 				Keyboard.delete(87);
 				Keyboard.delete(83);
@@ -103,20 +103,26 @@ Pong.logic = function(state, context, res) {
 	/* Bounce ball of wall */
 	if(state.ball.y <= state.scale/context.canvas.height || state.ball.y >= 1 - 2*state.scale/context.canvas.height) {
 		state.ball.a = 2*Math.PI - state.ball.a;
-		res.blip.play();
+		try {
+			if(res.blip) res.blip.play();
+		} catch(ignored) {}
 	}
 
 	/* Bounce ball of paddle, taking into account where the ball hit */
 	if(Math.round(state.ball.x*30) == 3 && state.ball.y >= state.paddle1.y && state.ball.y <= state.paddle1.y + state.paddle1.l) {
 		state.ball.a = Math.PI - state.ball.a - (state.ball.y - state.paddle1.y - state.paddle1.l/2)/state.paddle1.l*Math.PI/4;
 		state.ball.v = Math.min(2, state.ball.v + 0.05); //.limitit speed to prevent ball passing through paddle.
-		res.blip.play();
+		try {
+			if(res.blip) res.blip.play();
+		} catch(ignored) {}
 	}
 
 	if(Math.round(state.ball.x*30) == 27 && state.ball.y >= state.paddle2.y && state.ball.y <= state.paddle2.y + state.paddle2.l) {
 		state.ball.a = Math.PI - state.ball.a - (state.ball.y - state.paddle2.y - state.paddle1.l/2)/state.paddle2.l*Math.PI/4;
 		state.ball.v = Math.min(2, state.ball.v + 0.05);
-		res.blip.play();
+		try {
+			if(res.blip) res.blip.play();
+		} catch(ignored) {}
 	}
 
 	/* A point has been scored, time to reset */
@@ -127,10 +133,14 @@ Pong.logic = function(state, context, res) {
 		state.ball = {x: 0.5, y: 0.5, v:1, a:(Math.random() > 0.5 ? (Math.random()*Math.PI/2-Math.PI/8) : (Math.random()*Math.PI/2+Math.PI/8*5))};
 		state.running = false;
 
-		res.tone.play();
+		try {
+			if(res.tone) res.tone.play();
+		} catch(ignored) {}
 		setTimeout(function(){
-			res.tone.pause();
-			res.tone.currentTime = 0;
+			try {
+				if(res.tone) res.tone.pause();
+				if(res.tone) res.tone.currentTime = 0;
+			} catch(ignored) {}
 			state.running = true;
 		}, 1000);
 	}

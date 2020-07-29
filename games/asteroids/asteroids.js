@@ -13,6 +13,13 @@ var Asteroids = {
 	Entities: {}
 };
 
+Asteroids.Sign = function(n) {
+	if(isNaN(n)) return NaN;
+	if(n > 0) return 1;
+	if(n < 0) return -1;
+	return 0;
+}
+
 Asteroids.Entities.Particle = function(x, y, a, v) {
 	this.x = x;
 	this.y = y;
@@ -89,7 +96,7 @@ Asteroids.Entities.Ship = function(x, y) {
 	this.logic = function(delta, bounds) {
 		this.prototype.logic.call(this, delta, bounds);
 
-		this.v = Math.sign(this.v)*(Math.max(0, Math.abs(this.v) - delta*0.000001));
+		this.v = Asteroids.Sign(this.v)*(Math.max(0, Math.abs(this.v) - delta*0.000001));
 
 		this.lastbullet = Math.min(1000, this.lastbullet + delta);
 		this.invicible  = Math.max(0, this.invicible - delta);
@@ -176,8 +183,8 @@ Asteroids.init = function(context, path) {
 		e.stopPropagation();
 
 		Asteroids.State.dragging = true;
-		Asteroids.State.moveX = Math.sign(Math.round(4 * e.offsetX / e.target.clientWidth) - 2);
-		Asteroids.State.moveY = Math.sign(Math.round(4 * e.offsetY / e.target.clientHeight) - 2);
+		Asteroids.State.moveX = Asteroids.Sign(Math.round(4 * e.offsetX / e.target.clientWidth) - 2);
+		Asteroids.State.moveY = Asteroids.Sign(Math.round(4 * e.offsetY / e.target.clientHeight) - 2);
 	});
 
 	Asteroids.Context.canvas.addEventListener("mousemove", function(e) {
@@ -186,8 +193,8 @@ Asteroids.init = function(context, path) {
 		e.stopPropagation();
 
 		if(Asteroids.State.dragging) {
-			Asteroids.State.moveX = Math.sign(Math.round(4 * e.offsetX / e.target.clientWidth) - 2);
-			Asteroids.State.moveY = Math.sign(Math.round(4 * e.offsetY / e.target.clientHeight) - 2);
+			Asteroids.State.moveX = Asteroids.Sign(Math.round(4 * e.offsetX / e.target.clientWidth) - 2);
+			Asteroids.State.moveY = Asteroids.Sign(Math.round(4 * e.offsetY / e.target.clientHeight) - 2);
 		}
 	});
 
@@ -211,8 +218,8 @@ Asteroids.init = function(context, path) {
 
 		Asteroids.State.touching = e.changedTouches[0].identifier;
 		var rect = e.changedTouches[0].target.getBoundingClientRect();
-		Asteroids.State.moveX = Math.sign(Math.round(4 * (e.changedTouches[0].clientX - rect.left) / e.target.clientWidth) - 2);
-		Asteroids.State.moveY = Math.sign(Math.round(4 * (e.changedTouches[0].clientY - rect.top) / e.target.clientHeight) - 2);
+		Asteroids.State.moveX = Asteroids.Sign(Math.round(4 * (e.changedTouches[0].clientX - rect.left) / e.target.clientWidth) - 2);
+		Asteroids.State.moveY = Asteroids.Sign(Math.round(4 * (e.changedTouches[0].clientY - rect.top) / e.target.clientHeight) - 2);
 	});
 
 	Asteroids.Context.canvas.addEventListener("touchmove", function(e) {
@@ -220,11 +227,11 @@ Asteroids.init = function(context, path) {
 
 		e.stopPropagation();
 
-		for (var touch of e.changedTouches) {
-			if(Asteroids.State.touching == touch.identifier) {
-				var rect = touch.target.getBoundingClientRect();
-				Asteroids.State.moveX = Math.sign(Math.round(4 * (touch.clientX - rect.left) / e.target.clientWidth) - 2);
-				Asteroids.State.moveY = Math.sign(Math.round(4 * (touch.clientY - rect.top) / e.target.clientHeight) - 2);
+		for (var i = 0; i < e.changedTouches.length; i++) {
+			if(Asteroids.State.touching == e.changedTouches[i].identifier) {
+				var rect = e.changedTouches[i].target.getBoundingClientRect();
+				Asteroids.State.moveX = Asteroids.Sign(Math.round(4 * (e.changedTouches[i].clientX - rect.left) / e.target.clientWidth) - 2);
+				Asteroids.State.moveY = Asteroids.Sign(Math.round(4 * (e.changedTouches[i].clientY - rect.top) / e.target.clientHeight) - 2);
 				break;
 			}
 		}
@@ -235,8 +242,8 @@ Asteroids.init = function(context, path) {
 
 		e.stopPropagation();
 
-		for (var touch of e.changedTouches) {
-			if(Asteroids.State.touching == touch.identifier) {
+		for (var i = 0; i < e.changedTouches.length; i++) {
+			if(Asteroids.State.touching == e.changedTouches[i].identifier) {
 				Asteroids.State.touching = false;
 				Keyboard.delete(32);
 				Keyboard.delete(37);
@@ -299,7 +306,9 @@ Asteroids.events = function(state, context, res) {
 		Keyboard.has(32) && state.ship.lastbullet >= 400
 	) {
 		state.ship.lastbullet = 0;
-		if (res.blip && res.blip.play) res.blip.play();
+		try {
+			res.blip.play();
+		} catch(ignored) {}
 		state.bullets.push(new Asteroids.Entities.Bullet(state.ship));
 	}
 }
@@ -327,10 +336,14 @@ Asteroids.logic = function(state, context, res) {
 				state.score += 1;
 				state.asteroids.splice(a, 1);
 
-				if(res.tone && res.tone.play) res.tone.play();
+				try {
+					if(res.tone && res.tone.play) res.tone.play();
+				} catch(ignored) {}
 				setTimeout(function(){
-					if(res.tone) res.tone.currentTime = 0;
-					if(res.tone && res.tone.pause) res.tone.pause();
+					try {
+						if(res.tone) res.tone.currentTime = 0;
+						if(res.tone && res.tone.pause) res.tone.pause();
+					} catch(ignored) {}
 					Asteroids.State.running = true;
 				}, 200);
 				return;
@@ -355,10 +368,14 @@ Asteroids.logic = function(state, context, res) {
 			Asteroids.State.running = false;
 			state.ship = new Asteroids.Entities.Ship(0.5, 0.5);
 
-			if(res.tone && res.tone.play) res.tone.play();
+			try {
+				if(res.tone && res.tone.play) res.tone.play();
+			} catch(ignored) {}
 			setTimeout(function(){
-				if(res.tone) res.tone.currentTime = 0;
-				if(res.tone && res.tone.pause) res.tone.pause();
+				try {
+					if(res.tone) res.tone.currentTime = 0;
+					if(res.tone && res.tone.pause) res.tone.pause();
+				} catch(ignored) {}
 				Asteroids.State.running = true;
 			}, 1000);
 
