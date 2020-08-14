@@ -61,13 +61,24 @@ Snake.init = function(context, path) {
 
 	Snake.Context.canvas.addEventListener("touchstart", function(e) {
 		if(Snake.State.dragging) return;
+
+		e.preventDefault();
+
 		Snake.State.touching = e.changedTouches[0].identifier;
 		Snake.State.startX = e.changedTouches[0].clientX;
 		Snake.State.startY = e.changedTouches[0].clientY;
 	});
 
+	Snake.Context.canvas.addEventListener("touchmove", function(e) {
+		if(Snake.State.dragging) return;
+
+		e.preventDefault();
+	});
+
 	Snake.Context.canvas.addEventListener("touchend", function(e) {
 		if(Snake.State.dragging) return;
+
+		e.preventDefault();
 
 		for (var i = 0; i < e.changedTouches.length; i++) {
 			if(Snake.State.touching == e.changedTouches[i].identifier) {

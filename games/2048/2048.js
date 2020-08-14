@@ -76,13 +76,24 @@ TwoZeroFourEight.init = function(context) {
 
 	TwoZeroFourEight.Context.canvas.addEventListener("touchstart", function(e) {
 		if(TwoZeroFourEight.State.dragging) return;
+
+		e.preventDefault();
+
 		TwoZeroFourEight.State.touching = e.changedTouches[0].identifier;
 		TwoZeroFourEight.State.startX = e.changedTouches[0].clientX;
 		TwoZeroFourEight.State.startY = e.changedTouches[0].clientY;
 	});
 
+	TwoZeroFourEight.Context.canvas.addEventListener("touchstart", function(e) {
+		if(TwoZeroFourEight.State.dragging) return;
+
+		e.preventDefault();
+	});
+
 	TwoZeroFourEight.Context.canvas.addEventListener("touchend", function(e) {
 		if(TwoZeroFourEight.State.dragging) return;
+
+		e.preventDefault();
 
 		for (var i = 0; i < e.changedTouches.length; i++) {
 			if(TwoZeroFourEight.State.touching == e.changedTouches[i].identifier) {

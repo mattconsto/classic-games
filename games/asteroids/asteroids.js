@@ -180,8 +180,6 @@ Asteroids.init = function(context, path) {
 	Asteroids.Context.canvas.addEventListener("mousedown", function(e) {
 		if(Asteroids.State.touching !== false) return;
 
-		e.stopPropagation();
-
 		Asteroids.State.dragging = true;
 		Asteroids.State.moveX = Asteroids.Sign(Math.round(4 * e.offsetX / e.target.clientWidth) - 2);
 		Asteroids.State.moveY = Asteroids.Sign(Math.round(4 * e.offsetY / e.target.clientHeight) - 2);
@@ -189,8 +187,6 @@ Asteroids.init = function(context, path) {
 
 	Asteroids.Context.canvas.addEventListener("mousemove", function(e) {
 		if(Asteroids.State.touching !== false) return;
-
-		e.stopPropagation();
 
 		if(Asteroids.State.dragging) {
 			Asteroids.State.moveX = Asteroids.Sign(Math.round(4 * e.offsetX / e.target.clientWidth) - 2);
@@ -200,8 +196,6 @@ Asteroids.init = function(context, path) {
 
 	Asteroids.Context.canvas.addEventListener("mouseup", function(e) {
 		if(Asteroids.State.touching !== false) return;
-
-		e.stopPropagation();
 
 		Asteroids.State.dragging = false;
 		Keyboard.delete(32);
@@ -214,7 +208,7 @@ Asteroids.init = function(context, path) {
 	Asteroids.Context.canvas.addEventListener("touchstart", function(e) {
 		if(Asteroids.State.dragging) return;
 
-		e.stopPropagation();
+		e.preventDefault();
 
 		Asteroids.State.touching = e.changedTouches[0].identifier;
 		var rect = e.changedTouches[0].target.getBoundingClientRect();
@@ -225,7 +219,7 @@ Asteroids.init = function(context, path) {
 	Asteroids.Context.canvas.addEventListener("touchmove", function(e) {
 		if(Asteroids.State.dragging) return;
 
-		e.stopPropagation();
+		e.preventDefault();
 
 		for (var i = 0; i < e.changedTouches.length; i++) {
 			if(Asteroids.State.touching == e.changedTouches[i].identifier) {
@@ -240,7 +234,7 @@ Asteroids.init = function(context, path) {
 	Asteroids.Context.canvas.addEventListener("touchend", function(e) {
 		if(Asteroids.State.dragging) return;
 
-		e.stopPropagation();
+		e.preventDefault();
 
 		for (var i = 0; i < e.changedTouches.length; i++) {
 			if(Asteroids.State.touching == e.changedTouches[i].identifier) {

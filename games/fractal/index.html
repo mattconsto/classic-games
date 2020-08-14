@@ -31,6 +31,14 @@
 			top: 1em;
 			right: 1em;
 		}
+		@media (max-width: 375px) {
+			#buttons-right {
+				top: unset;
+				right: unset;
+				bottom: 1em;
+				left: 1em;
+			}
+		}
 	</style>
 	<div id="wrapper"></div>
 	<div id="buttons-left">
@@ -42,9 +50,11 @@
 		<a class="btn-floating waves-effect waves-light white" id="home-button" style="display: none" title="Return to Fractal (j)"><i class="material-icons black-text" onclick="Keyboard.add(74)">home</i></a>
 	</div>
 	<div id="buttons-right">
-		<a class="btn-floating waves-effect waves-light white" id="home-button" title="Zoom out (-)"><i class="material-icons black-text" onclick="Keyboard.add(173)">zoom_out</i></a>
-		<a class="btn-floating waves-effect waves-light white" id="home-button" title="Zoom in (+)"><i class="material-icons black-text" onclick="Keyboard.add(61)">zoom_in</i></a>
 		<a class="btn-floating waves-effect waves-light white" title="View High Quality (p)"><i class="material-icons black-text" onclick="Keyboard.add(80)">high_quality</i></a>
+		<span class="btn-floating waves-effect waves-light white" style="width: 80px; border-radius: 20px">
+			<a id="home-button" title="Zoom out (-)" style="width: 38px"><i class="material-icons black-text" onclick="Keyboard.add(173)">zoom_out</i></a>
+			<a id="home-button" title="Zoom in (+)" style="width: 38px"><i class="material-icons black-text" onclick="Keyboard.add(61)">zoom_in</i></a>
+		</span>
 	</div>
 </body>
 </html>

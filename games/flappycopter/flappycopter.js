@@ -71,8 +71,8 @@ FlappyCopter.events = function(state, context, res) {
 	if(Keyboard.delete(32) || Keyboard.delete(38) || Keyboard.delete(87)) FlappyCopter.Jump();
 }
 
-FlappyCopter.Jump = function() {
-	console.log('jump');
+FlappyCopter.Jump = function(e) {
+	e.preventDefault();
 	FlappyCopter.State.state = "flying";
 	FlappyCopter.State.ship.dy = Math.min(1, FlappyCopter.State.ship.dy + 10000);
 }
@@ -160,16 +160,17 @@ FlappyCopter.render = function(state, context, res) {
 
 	// Text
 	let string = (state.ship.x*10).toFixed(0) + " meters";
+	let stringScale = Math.max(0.25, Math.min(1, context.canvas.height / 750));
 	let stringOffset = 64;
 	for(let i = 0; i < string.length; i++) {
 		let code = string.toUpperCase().charCodeAt(i);
 		if(code >= 48 && code <= 57) {
 			let width = 32/res.numbers[code-48].height*res.numbers[code-48].width;
-			context.drawImage(res.numbers[code-48], stringOffset, 64, width, 32);
+			context.drawImage(res.numbers[code-48], stringOffset * stringScale, 64 * stringScale, width * stringScale, 32 * stringScale);
 			stringOffset += 25 + 5;
 		} else if(code >= 65 && code <= 90) {
 			let width = 32/res.letters[code-65].height*res.letters[code-65].width;
-			context.drawImage(res.letters[code-65], stringOffset, 64, width, 32);
+			context.drawImage(res.letters[code-65], stringOffset * stringScale, 64 * stringScale, width * stringScale, 32 * stringScale);
 			stringOffset += width + 5;
 		} else {
 			stringOffset += 15;

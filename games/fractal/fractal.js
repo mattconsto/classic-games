@@ -344,6 +344,18 @@ Fractal.init = function(wrapper) {
 		}
 	});
 
+	context.canvas.addEventListener("touchstart", function(e) {
+		e.preventDefault();
+	});
+
+	context.canvas.addEventListener("touchmove", function(e) {
+		e.preventDefault();
+	});
+
+	context.canvas.addEventListener("touchend", function(e) {
+		e.preventDefault();
+	});
+
 	// Precaculate for speed.
 	for(var i = 0; i <= state.iterations * state.iterationsMultiplier; i++) {
 		state.colourMap[i] = HSVtoRGB(

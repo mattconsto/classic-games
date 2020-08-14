@@ -45,7 +45,7 @@ Pong.init = function(context, path) {
 	resizefunc();
 
 	let touchfunc = function(e) {
-		e.stopPropagation();
+		e.preventDefault();
 
 		for (var i = 0; i < e.changedTouches.length; i++) {
 			var rect = e.changedTouches[i].target.getBoundingClientRect();
@@ -64,7 +64,7 @@ Pong.init = function(context, path) {
 	Pong.Context.canvas.addEventListener("touchstart", touchfunc);
 	Pong.Context.canvas.addEventListener("touchmove", touchfunc);
 	Pong.Context.canvas.addEventListener("touchend", function(e) {
-		e.stopPropagation();
+		e.preventDefault();
 
 		for (var i = 0; i < e.changedTouches.length; i++) {
 			var rect = e.changedTouches[i].target.getBoundingClientRect();
@@ -109,20 +109,24 @@ Pong.logic = function(state, context, res) {
 	}
 
 	/* Bounce ball of paddle, taking into account where the ball hit */
-	if(Math.round(state.ball.x*30) == 3 && state.ball.y >= state.paddle1.y && state.ball.y <= state.paddle1.y + state.paddle1.l) {
-		state.ball.a = Math.PI - state.ball.a - (state.ball.y - state.paddle1.y - state.paddle1.l/2)/state.paddle1.l*Math.PI/4;
-		state.ball.v = Math.min(2, state.ball.v + 0.05); //.limitit speed to prevent ball passing through paddle.
-		try {
-			if(res.blip) res.blip.play();
-		} catch(ignored) {}
-	}
+	var direction = (Math.PI + state.ball.a) % Math.PI;
 
-	if(Math.round(state.ball.x*30) == 27 && state.ball.y >= state.paddle2.y && state.ball.y <= state.paddle2.y + state.paddle2.l) {
-		state.ball.a = Math.PI - state.ball.a - (state.ball.y - state.paddle2.y - state.paddle1.l/2)/state.paddle2.l*Math.PI/4;
-		state.ball.v = Math.min(2, state.ball.v + 0.05);
-		try {
-			if(res.blip) res.blip.play();
-		} catch(ignored) {}
+	if(state.ball.a >= 0.5 * Math.PI && state.ball.a <= 1.5 * Math.PI) {
+		if (Math.round(state.ball.x*20) == 2 && state.ball.y >= state.paddle1.y && state.ball.y <= state.paddle1.y + state.paddle1.l) {
+			state.ball.a = Math.PI - state.ball.a - (state.ball.y - state.paddle1.y - state.paddle1.l/2)/state.paddle1.l*Math.PI/4;
+			state.ball.v = Math.min(1.25, state.ball.v + 0.05); //.limitit speed to prevent ball passing through paddle.
+			try {
+				if(res.blip) res.blip.play();
+			} catch(ignored) {}
+		}
+	} else {
+		if(Math.round(state.ball.x*20) == 18 && state.ball.y >= state.paddle2.y && state.ball.y <= state.paddle2.y + state.paddle2.l) {
+			state.ball.a = Math.PI - state.ball.a - (state.ball.y - state.paddle2.y - state.paddle1.l/2)/state.paddle2.l*Math.PI/4;
+			state.ball.v = Math.min(1.25, state.ball.v + 0.05);
+			try {
+				if(res.blip) res.blip.play();
+			} catch(ignored) {}
+		}
 	}
 
 	/* A point has been scored, time to reset */
