@@ -315,8 +315,24 @@ Fractal.init = function(wrapper) {
 		state.bottom -= deltaY;
 	});
 
+	var tapedTwice = false;
 	window.addEventListener("touchstart", function(e) {
 		e.stopPropagation();
+
+		if(!tapedTwice) {
+			tapedTwice = true;
+			setTimeout(function() {
+				tapedTwice = false;
+			}, 300);
+		} else {
+			// Allow touch users to dblclick
+			var event = new MouseEvent("dblclick", e.changedTouches[0]);
+			Object.defineProperty(event, 'target', {
+				writable: false, value: e.target
+			});
+			window.dispatchEvent(event);
+			return;
+		}
 
 		if (state.touching !== false) return;
 
