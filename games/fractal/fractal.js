@@ -490,6 +490,8 @@ Fractal.generate = function(state, context, x, y) {
 Fractal.Redraw = function() {
 	Fractal.State.generated = false;
 	Fractal.State.scale = Fractal.State.max;
+	var downloadButton = document.getElementById("download-button");
+	downloadButton.innerHTML = "high_quality";
 }
 
 Fractal.events = function(state, context, res) {
@@ -571,6 +573,13 @@ Fractal.events = function(state, context, res) {
 		if(state.scale >= 1) {
 			state.scale = 1;
 			state.generated = false;
+			var downloadButton = document.getElementById("download-button");
+			downloadButton.innerHTML = "download";
+		} else if(state.generated) {
+			var link = document.createElement('a');
+			link.setAttribute('download', 'fractal.png');
+			link.setAttribute('href', context.canvas.toDataURL('image/png'));
+			link.click();
 		}
 	}
 	if(Keyboard.delete(82)) { // r
