@@ -300,6 +300,21 @@ Fractal.init = function(wrapper) {
 		Fractal.Redraw();
 	});
 
+	window.addEventListener("dblclick", function(e) {
+		if (e.button == 2) return;
+
+		if (e.target.nodeName.toLowerCase() != 'canvas') return;
+
+		e.stopPropagation();
+
+		var deltaX = (state.stop - state.start) / state.zoomMultiplier;
+		var deltaY = (state.bottom - state.top) / state.zoomMultiplier;
+		state.start += deltaX;
+		state.stop -= deltaX;
+		state.top += deltaY;
+		state.bottom -= deltaY;
+	});
+
 	window.addEventListener("touchstart", function(e) {
 		e.stopPropagation();
 
