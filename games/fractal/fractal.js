@@ -123,6 +123,24 @@ function HSVtoRGB(h, s, v) {
 		Math.round(r * 255);
 }
 
+function Clamp(val, min, max) {
+	return Math.max(Math.min(max, val), min);
+}
+
+function LerpRGB(colors, t) {
+	var color1 = colors[Math.max(0, Math.floor(t))];
+	var color2 = colors[Math.min(colors.length - 1, Math.floor(t) + 1)];
+
+	var r = color1.r + ((color2.r - color1.r) * (t % 1));
+	var g = color1.g + ((color2.g - color1.g) * (t % 1));
+	var b = color1.b + ((color2.b - color1.b) * (t % 1));
+
+	return (255 << 24) |
+		(Math.round(b) << 16) |
+		(Math.round(g) << 8) |
+		Math.round(r);
+}
+
 var Fractal = {
 	Info: {
 		name: "Fractal",
@@ -388,11 +406,38 @@ Fractal.init = function(wrapper) {
 	});
 
 	// Precaculate for speed.
+	// for(var i = 0; i <= state.iterations * state.iterationsMultiplier; i++) {
+	// 	state.colourMap[i] = HSVtoRGB(
+	// 		i / 20.0 / state.iterationsMultiplier,
+	// 		1.0,
+	// 		1.0,
+	// 	);
+	// }
 	for(var i = 0; i <= state.iterations * state.iterationsMultiplier; i++) {
-		state.colourMap[i] = HSVtoRGB(
-			i / 20.0 / state.iterationsMultiplier,
-			1.0,
-			1.0,
+		state.colourMap[i] = LerpRGB(
+			[
+				{r: 0,   g: 7,   b: 110},
+				{r: 32,  g: 107, b: 203},
+				{r: 237, g: 255, b: 255},
+				{r: 255, g: 170, b: 0},
+				{r: 0,   g: 2,   b: 0},
+				{r: 0,   g: 7,   b: 110},
+				{r: 32,  g: 107, b: 203},
+				{r: 237, g: 255, b: 255},
+				{r: 255, g: 170, b: 0},
+				{r: 0,   g: 2,   b: 0},
+				{r: 0,   g: 7,   b: 110},
+				{r: 32,  g: 107, b: 203},
+				{r: 237, g: 255, b: 255},
+				{r: 255, g: 170, b: 0},
+				{r: 0,   g: 2,   b: 0},
+				{r: 0,   g: 7,   b: 110},
+				{r: 32,  g: 107, b: 203},
+				{r: 237, g: 255, b: 255},
+				{r: 255, g: 170, b: 0},
+				{r: 0,   g: 2,   b: 0},
+			],
+			Clamp(i / state.iterations / 10, 0, 19),
 		);
 	}
 	state.colourMap[-1] = 255 << 24;
